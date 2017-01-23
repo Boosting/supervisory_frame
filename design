@@ -1,0 +1,27 @@
+class RealTimeMoniter
+	vector<Target> targets;
+	Detector detector;
+	Tracker tracker;
+
+	void setDetector(Detector detector);
+	void setTracker(Tracker tracker);
+	vector<Target> getTargets();
+	Mat getCurrentImage();
+	void run(){
+		// every 1 minute, use detector.detect() to re-initializate regions
+		// every 1 second, use tracker.update() to update regions
+	
+	}
+	void stop();
+	
+class MultiTargetsDetector
+Override:	vector<Target> detect(const Mat& image);
+
+class ClassIndependentTracker
+	void update(const Mat& preImage, const Mat& curImage, Target &target);
+Override:	Rect getUpdateRegion(const Mat& preImage, const Mat& curImage, Rect &preRegion);
+
+
+class Target
+	Rect region;
+	Mat image; 引用计数

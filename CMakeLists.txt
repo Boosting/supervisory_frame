@@ -1,0 +1,36 @@
+cmake_minimum_required(VERSION 3.6)
+project(supervisory_frame)
+
+set(CMAKE_CXX_STANDARD 11)
+
+add_compile_options(-std=c++11)
+
+include_directories(include)
+
+set(SOURCE_FILES
+    include/class_independent_tracker.hpp
+    include/multi_target_detector.hpp
+    include/real_time_monitor.hpp
+    src/class_independent_tracker.cpp
+    src/real_time_monitor.cpp
+        src/class_independent_tracker.cpp
+        src/target.cpp
+)
+
+add_executable(supervisory_frame ${SOURCE_FILES})
+
+# attention:
+# OpenCV_DIR should be set by yourself,
+# remember that directory like {opencv-3.1.0/build} is created by you for installing OpenCV
+set(OpenCV_DIR /home/dujiajun/opencv-3.1.0/build)
+FIND_PACKAGE(OpenCV REQUIRED)
+TARGET_LINK_LIBRARIES(supervisory_frame ${OpenCV_LIBS})
+
+find_package(Threads REQUIRED)
+if(THREADS_HAVE_PTHREAD_ARG)
+    set_property(TARGET supervisory_frame PROPERTY COMPILE_OPTIONS -pthread)
+    set_property(TARGET supervisory_frame PROPERTY INTERFACE_COMPILE_OPTIONS -pthread)
+endif()
+if(CMAKE_THREAD_LIBS_INIT)
+    target_link_libraries(supervisory_frame ${CMAKE_THREAD_LIBS_INIT})
+endif()
