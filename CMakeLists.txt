@@ -5,7 +5,9 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_compile_options(-std=c++11)
 
+set(CAFFE_PATH /home/dujiajun/caffe/include)
 include_directories(include)
+include_directories(${CAFFE_PATH})
 
 set(SOURCE_FILES
     include/class_independent_tracker.hpp
