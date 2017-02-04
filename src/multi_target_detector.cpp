@@ -73,7 +73,7 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
 
 vector<vector<float> > MultiTargetDetector::getOutputData(string blob_name)
 {
-    const shared_ptr<Blob<float> > blob_ptr = net->blob_by_name(blob_name);
+	boost::shared_ptr<Blob<float> > blob_ptr = net->blob_by_name(blob_name);
     int blob_cnt = blob_ptr->count();
     const float* blob_data = blob_ptr->cpu_data();
     int second_layer_size = blob_cnt / roi_num;
