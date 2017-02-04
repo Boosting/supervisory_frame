@@ -60,9 +60,9 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     vector<vector<float> > cls_prob = getOutputData(net, "cls_prob");
     vector<vector<float> > bbox_pred = getOutputData(net, "bbox_pred");
 
-    vector<vector<float> > bbox = bbox_transform(rois, bbox_pred, cls_prob);
+    vector<vector<int> > bbox = bbox_transform(rois, bbox_pred, cls_prob);
 
-    vector<int> bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
+    vector<vector<int> > bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
     //translate cls to Target
     return ;
 }
@@ -82,8 +82,8 @@ vector<vector<float> > MultiTargetDetector::getOutputData(shared_ptr< Net<float>
     return output_data;
 }
 
-vector<vector<float> > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred){
-    vector<vector<float> > bbox(roi_num, vector<float>(4));
+vector<vector<int> > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred){
+    vector<vector<int> > bbox(roi_num, vector<int>(4));
     for(int i=0;i<roi_num;i++){
         float x1=rois[i][1], y1=rois[i][2], x2=rois[i][3],y2=rois[i][4]; //rois[i][0] is not position
         float width=x2-x1+1, height=y2-y1+1, center_x=x1+width*0.5, center_y=y1+height*0.5;
@@ -92,7 +92,50 @@ vector<vector<float> > MultiTargetDetector::bbox_transform(const vector<vector<f
         float pred_center_x = dx * width + center_x, pred_center_y = dy * height + center_y;
         float pred_x1 = pred_center_x - pred_width * 0.5, pred_x2 = pred_center_x + pred_width * 0.5;
         float pred_y1 = pred_center_y - pred_height * 0.5, pred_y2 = pred_center_y + pred_height * 0.5;
-        bbox[i][0]=pred_x1, bbox[i][1]=pred_y1, bbox[i][2]=pred_x2, bbox[i][3]=pred_y2;
+        bbox[i][0]=pred_x1, bbox[i][1]=pred_y1, bbox[i][2]=pred_x2, bbox[i][3]=pred_y2;  // convert float to int may be ambiguous
     }
     return bbox;
+}
+
+vector<vector<int> > MultiTargetDetector::nms(const vector<vector<float> > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.3) {
+    vector<vector<int> > bbox_cls; //x1, y1, x2, y2, cls
+    for(int cls_id=1;cls_id<cls_num;cls_id++){
+        vector<vector<float> > bbox_score;
+        for(int i=0;i<roi_numm;i++){
+            // can speed up by delete low score bbox
+            float score=cls_prob[i][cls_id];
+            float x1=bbox[i][0], y1=bbox[i][1], x2=bbox[i][2], y2=bbox[i][3];
+            bbox_score.push_back({x1, y1, x2, y2, score});
+        }
+        sort(bbox_score.begin(), bbox_score.end(),
+             [](const vector<float> &bbox1, const vector<float> &bbox2) -> bool {
+                 return bbox1[4]>bbox2[4];
+             }
+        );
+
+        vector<bool> is_suppressed(bbox_score.size(), false);
+        for(int i=0;i<bbox_score.size()-1;i++){
+            if(is_suppressed[i]) continue;
+            float lx1=bbox_score[i][0], ly1=bbox_score[i][1], lx2=bbox_score[i][2], ly2=bbox_score[i][3];
+            for(int j=i+1;j<bbox_score.size();j++){
+                float sx1=bbox_score[j][0], sy1=bbox_score[j][1], sx2=bbox_score[j][2], sy2=bbox_score[j][3];
+                float x1max=max(lx1,sx1), x2min=min(lx2,sx2), y1max=max(ly1,sy1), y2min=min(ly2,sy2);
+                float overlapWidth = x2min - x1max + 1;
+                float overlapHeight = y2min - y1max + 1;
+                float small_bbox_size = (sx2-sx1+1)*(sy2-sy1+1);
+                float overlapRate = (overlapWidth * overlapHeight) / small_bbox_size;
+                if (overlapRate > overlapThreshold)
+                {
+                    is_suppressed[j] = true;
+                }
+            }
+        }
+        for(int i=0;i<bbox_score.size();i++){
+            if(!is_suppressed[i]){
+                int x1=bbox_score[i][0], y1=bbox_score[i][1], x2=bbox_score[i][2], y2=bbox_score[i][3];
+                bbox_cls.push_back({x1, y1, x2, y2, cls_id});
+            }
+        }
+    }
+    return bbox_cls;
 }

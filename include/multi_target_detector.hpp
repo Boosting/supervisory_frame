@@ -20,7 +20,8 @@ private:
     //vector<Target> label_vec;
 
     vector<vector<float> > getOutputData(shared_ptr< Net<float> > & net, string blob_name);
-    vector<vector<float> > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred);
+    vector<vector<int> > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred);
+    vector<vector<int> > MultiTargetDetector::nms(const vector<vector<int> > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.3);
 };
 
 #endif //SUPERVISORY_FRAME_MULTI_TARGET_DETECTOR_HPP
