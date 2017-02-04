@@ -26,7 +26,7 @@ MultiTargetDetector::MultiTargetDetector(const string& model_file, const string&
 //    CHECK_EQ(net->num_outputs(), 1) << "Network should have exactly one output.";
 
     Blob<float>* input_layer = net->input_blobs()[0];
-    num_channels_ = input_layer->channels();
+    int num_channels_ = input_layer->channels();
     CHECK(num_channels_ == 3 || num_channels_ == 1)
         << "Input layer should have 1 or 3 channels.";
 
@@ -47,13 +47,13 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     vector<cv::Mat> input_channels;
     float* input_data = input_layer->mutable_cpu_data();
     for (int i = 0; i < input_layer->channels(); ++i) {
-        cv::Mat channel(height, width, CV_32FC1, input_data);
-        input_channels->push_back(channel);
-        input_data += width * height;
+        cv::Mat channel(image_height, image_width, CV_32FC1, input_data);
+        input_channels.push_back(channel);
+        input_data += image_width * image_height;
     }
 
     // need to preprocess the image
-    cv::split(image, *input_channels);
+    cv::split(image, input_channels);
     net->ForwardPrefilled();
 
     vector<vector<float> > rois = getOutputData(net, "rois");
@@ -63,17 +63,21 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     vector<vector<int> > bbox = bbox_transform(rois, bbox_pred);
 
     vector<vector<int> > bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
+    for(int i=0;i<bbox_cls.size();i++){
+        cout<<"x1: "<<bbox_cls[i][0]<<" y1: "<<bbox_cls[i][1]<<" x2: "<<bbox_cls[i][2]<<" y2: "<<bbox_cls[i][3]<<endl;
+        cout<<"cls: "<<bbox_cls[i][4]<<endl;
+    }
     //translate cls to Target
-    return ;
+    return vector<Target>();
 }
 
 vector<vector<float> > MultiTargetDetector::getOutputData(shared_ptr< Net<float> > & net, string blob_name)
 {
     shared_ptr<Blob<float> > blob_ptr = net->blob_by_name(blob_name);
     int blob_cnt = blob_ptr->count();
-    float* blob_data = blob_ptr->cpu_data();
+    const float* blob_data = blob_ptr->cpu_data();
     int second_layer_size = blob_cnt / roi_num;
-    vector<vector<float> > output_data(roi_num, second_layer_size);
+    vector<vector<float> > output_data(roi_num, vector<float>(second_layer_size));
     for(int i=0;i<roi_num;i++){
         for(int j=0;j<second_layer_size;j++){
             output_data[i][j] = blob_data[i*roi_num+j];
@@ -126,7 +130,7 @@ vector<vector<int> > MultiTargetDetector::nms(const vector<vector<int> > &bbox, 
                 float small_bbox_size = (sx2-sx1+1)*(sy2-sy1+1);
                 if(overlapHeight > 0 && overlapWidth > 0) {
                     float overlapRate = (overlapWidth * overlapHeight) / small_bbox_size; //avoid divide 0 in the code before
-                    if (overlapRate > overlapThreshold) {
+                    if (overlapRate > thresh) {
                         is_suppressed[j] = true;
                     }
                 }
@@ -140,4 +144,17 @@ vector<vector<int> > MultiTargetDetector::nms(const vector<vector<int> > &bbox, 
         }
     }
     return bbox_cls;
+}
+
+int main()
+{
+    string model_file="/home/dujiajun/py-faster-rcnn/models/kitti/VGG16/faster_rcnn_end2end/test.prototxt";
+    string trained_file="/home/dujiajun/py-faster-rcnn/data/kitti/VGG16/faster_rcnn_end2end.caffemodel";
+    string image_file="/home/dujiajun/kitti/testing/image_2/000456.png";
+    MultiTargetDetector detector(model_file, trained_file);
+    Mat image;
+    image=cv::imread(image_file);
+    cout<<"height: "<<image.rows<<" width: "<<image.cols<<endl;
+    detector.detectTargets(image);
+    return 0;
 }

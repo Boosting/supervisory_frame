@@ -20,6 +20,7 @@ set(SOURCE_FILES
 )
 
 add_executable(supervisory_frame ${SOURCE_FILES})
+add_executable(multi_target_detector src/multi_target_detector.cpp src/target.cpp)
 
 # attention:
 # OpenCV_DIR should be set by yourself,
@@ -27,6 +28,7 @@ add_executable(supervisory_frame ${SOURCE_FILES})
 set(OpenCV_DIR /home/dujiajun/opencv-3.1.0/build)
 FIND_PACKAGE(OpenCV REQUIRED)
 TARGET_LINK_LIBRARIES(supervisory_frame ${OpenCV_LIBS})
+TARGET_LINK_LIBRARIES(multi_target_detector ${OpenCV_LIBS})
 
 find_package(Threads REQUIRED)
 if(THREADS_HAVE_PTHREAD_ARG)

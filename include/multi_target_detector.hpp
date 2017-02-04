@@ -14,7 +14,7 @@ public:
     vector<Target> detectTargets(const Mat& image);
 
 private:
-    shared_ptr<Net<float> > caffe_net;
+    shared_ptr<Net<float> > net;
     int roi_num = 4096;
     int cls_num = 4; // include __background__
     //vector<Target> label_vec;
