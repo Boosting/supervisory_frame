@@ -15,7 +15,12 @@ public:
 
 private:
     shared_ptr<Net<float> > caffe_net;
+    int roi_num = 4096;
+    int cls_num = 4; // include __background__
     //vector<Target> label_vec;
+
+    vector<vector<float> > getOutputData(shared_ptr< Net<float> > & net, string blob_name);
+    vector<vector<float> > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred);
 };
 
 #endif //SUPERVISORY_FRAME_MULTI_TARGET_DETECTOR_HPP

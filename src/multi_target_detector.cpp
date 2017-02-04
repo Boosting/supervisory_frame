@@ -19,28 +19,30 @@ MultiTargetDetector::MultiTargetDetector(const string& model_file, const string&
     else Caffe::set_mode(Caffe::CPU);
 
     /* Load the network. */
-    caffe_net.reset(new Net<float>(model_file, TEST));
-    caffe_net->CopyTrainedLayersFrom(trained_file);
+    net.reset(new Net<float>(model_file, TEST));
+    net->CopyTrainedLayersFrom(trained_file);
 
-//    CHECK_EQ(caffe_net->num_inputs(), 1) << "Network should have exactly one input.";
-//    CHECK_EQ(caffe_net->num_outputs(), 1) << "Network should have exactly one output.";
+//    CHECK_EQ(net->num_inputs(), 1) << "Network should have exactly one input.";
+//    CHECK_EQ(net->num_outputs(), 1) << "Network should have exactly one output.";
 
-    Blob<float>* input_layer = caffe_net->input_blobs()[0];
+    Blob<float>* input_layer = net->input_blobs()[0];
     num_channels_ = input_layer->channels();
     CHECK(num_channels_ == 3 || num_channels_ == 1)
         << "Input layer should have 1 or 3 channels.";
 
-    //Blob<float>* output_layer = caffe_net->output_blobs()[0];
+    //Blob<float>* output_layer = net->output_blobs()[0];
     //CHECK_EQ(labels_.size(), output_layer->channels())
     //    << "Number of labels is different from the output layer dimension.";
 
 }
 
-vector<float> MultiTargetDetector::detectTargets(const Mat& image) {
-    Blob<float>* input_layer = caffe_net->input_blobs()[0];
+vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
+    //Only single-image batch implemented, and no image pyramid
+
+    Blob<float>* input_layer = net->input_blobs()[0];
     int image_height = image.cols, image_width = image.rows;
     input_layer->Reshape(1, 3, image_height, image_width); // channel: 3
-    caffe_net->Reshape();
+    net->Reshape();
 
     vector<cv::Mat> input_channels;
     float* input_data = input_layer->mutable_cpu_data();
@@ -52,11 +54,45 @@ vector<float> MultiTargetDetector::detectTargets(const Mat& image) {
 
     // need to preprocess the image
     cv::split(image, *input_channels);
-    caffe_net->ForwardPrefilled();
+    net->ForwardPrefilled();
 
-    /* Copy the output layer to a std::vector */
-    Blob<float>* output_layer = caffe_net->output_blobs()[0];
-    const float* begin = output_layer->cpu_data();
-    const float* end = begin + 4 + 1;
-    return vector<float>(begin, end);
+    vector<vector<float> > rois = getOutputData(net, "rois");
+    vector<vector<float> > cls_prob = getOutputData(net, "cls_prob");
+    vector<vector<float> > bbox_pred = getOutputData(net, "bbox_pred");
+
+    vector<vector<float> > bbox = bbox_transform(rois, bbox_pred, cls_prob);
+
+    vector<int> bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
+    //translate cls to Target
+    return ;
+}
+
+vector<vector<float> > MultiTargetDetector::getOutputData(shared_ptr< Net<float> > & net, string blob_name)
+{
+    shared_ptr<Blob<float> > blob_ptr = net->blob_by_name(blob_name);
+    int blob_cnt = blob_ptr->count();
+    float* blob_data = blob_ptr->cpu_data();
+    int second_layer_size = blob_cnt / roi_num;
+    vector<vector<float> > output_data(roi_num, second_layer_size);
+    for(int i=0;i<roi_num;i++){
+        for(int j=0;j<second_layer_size;j++){
+            output_data[i][j] = blob_data[i*roi_num+j];
+        }
+    }
+    return output_data;
+}
+
+vector<vector<float> > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred){
+    vector<vector<float> > bbox(roi_num, vector<float>(4));
+    for(int i=0;i<roi_num;i++){
+        float x1=rois[i][1], y1=rois[i][2], x2=rois[i][3],y2=rois[i][4]; //rois[i][0] is not position
+        float width=x2-x1+1, height=y2-y1+1, center_x=x1+width*0.5, center_y=y1+height*0.5;
+        float dx=bbox_pred[i][0], dy=bbox_pred[i][1], dw=bbox_pred[i][2], dh=bbox_pred[i][3];
+        float pred_width = width * exp(dw), pred_height = height * exp(dh);
+        float pred_center_x = dx * width + center_x, pred_center_y = dy * height + center_y;
+        float pred_x1 = pred_center_x - pred_width * 0.5, pred_x2 = pred_center_x + pred_width * 0.5;
+        float pred_y1 = pred_center_y - pred_height * 0.5, pred_y2 = pred_center_y + pred_height * 0.5;
+        bbox[i][0]=pred_x1, bbox[i][1]=pred_y1, bbox[i][2]=pred_x2, bbox[i][3]=pred_y2;
+    }
+    return bbox;
 }
