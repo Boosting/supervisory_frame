@@ -14,7 +14,7 @@
 using namespace caffe;
 using namespace std;
 
-MultiTargetDetector::MultiTargetDetector(const string& model_file, const string& trained_file, bool useGPU = true) {
+MultiTargetDetector::MultiTargetDetector(const string& model_file, const string& trained_file, bool useGPU) {
     if(useGPU) Caffe::set_mode(Caffe::GPU);
     else Caffe::set_mode(Caffe::CPU);
 
@@ -73,7 +73,7 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
 
 vector<vector<float> > MultiTargetDetector::getOutputData(string blob_name)
 {
-    shared_ptr<Blob<float> > blob_ptr = net->blob_by_name(blob_name);
+    const shared_ptr<Blob<float> > blob_ptr = net->blob_by_name(blob_name);
     int blob_cnt = blob_ptr->count();
     const float* blob_data = blob_ptr->cpu_data();
     int second_layer_size = blob_cnt / roi_num;
@@ -101,7 +101,7 @@ vector<vector<int> > MultiTargetDetector::bbox_transform(const vector<vector<flo
     return bbox;
 }
 
-vector<vector<int> > MultiTargetDetector::nms(const vector<vector<int> > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.3) {
+vector<vector<int> > MultiTargetDetector::nms(const vector<vector<int> > &bbox, const vector<vector<float> > &cls_prob, float thresh) {
     vector<vector<int> > bbox_cls; //x1, y1, x2, y2, cls
     for(int cls_id=1;cls_id<cls_num;cls_id++){
         vector<vector<float> > bbox_score;
