@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.5)
 project(supervisory_frame)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -6,8 +6,12 @@ set(CMAKE_CXX_STANDARD 11)
 add_compile_options(-std=c++11)
 
 set(CAFFE_PATH /home/dujiajun/caffe/include)
+set(CUDA_PATH /usr/local/cuda-8.0/include/)
+set(HDF5_PATH /usr/include/hdf5/serial)
 include_directories(include)
 include_directories(${CAFFE_PATH})
+include_directories(${CUDA_PATH})
+include_directories(${HDF5_PATH})
 
 set(SOURCE_FILES
     include/class_independent_tracker.hpp
@@ -25,7 +29,7 @@ add_executable(multi_target_detector src/multi_target_detector.cpp src/target.cp
 # attention:
 # OpenCV_DIR should be set by yourself,
 # remember that directory like {opencv-3.1.0/build} is created by you for installing OpenCV
-set(OpenCV_DIR /home/dujiajun/opencv-3.1.0/build)
+set(OpenCV_DIR /home/dujiajun/opencv-3.2.0/build)
 FIND_PACKAGE(OpenCV REQUIRED)
 TARGET_LINK_LIBRARIES(supervisory_frame ${OpenCV_LIBS})
 TARGET_LINK_LIBRARIES(multi_target_detector ${OpenCV_LIBS})
