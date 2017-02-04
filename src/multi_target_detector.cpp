@@ -56,9 +56,9 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     cv::split(image, input_channels);
     net->ForwardPrefilled();
 
-    vector<vector<float> > rois = getOutputData(net, "rois");
-    vector<vector<float> > cls_prob = getOutputData(net, "cls_prob");
-    vector<vector<float> > bbox_pred = getOutputData(net, "bbox_pred");
+    vector<vector<float> > rois = getOutputData("rois");
+    vector<vector<float> > cls_prob = getOutputData("cls_prob");
+    vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
 
     vector<vector<int> > bbox = bbox_transform(rois, bbox_pred);
 
@@ -71,7 +71,7 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     return vector<Target>();
 }
 
-vector<vector<float> > MultiTargetDetector::getOutputData(shared_ptr< Net<float> > net, string blob_name)
+vector<vector<float> > MultiTargetDetector::getOutputData(string blob_name)
 {
     shared_ptr<Blob<float> > blob_ptr = net->blob_by_name(blob_name);
     int blob_cnt = blob_ptr->count();
