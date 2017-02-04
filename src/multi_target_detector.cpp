@@ -71,7 +71,7 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     return vector<Target>();
 }
 
-vector<vector<float> > MultiTargetDetector::getOutputData(shared_ptr< Net<float> > & net, string blob_name)
+vector<vector<float> > MultiTargetDetector::getOutputData(shared_ptr< Net<float> > net, string blob_name)
 {
     shared_ptr<Blob<float> > blob_ptr = net->blob_by_name(blob_name);
     int blob_cnt = blob_ptr->count();
