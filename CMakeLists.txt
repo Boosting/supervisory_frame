@@ -6,24 +6,26 @@ set(CMAKE_CXX_STANDARD 11)
 add_compile_options(-std=c++11)
 
 set(CAFFE_PATH /home/dujiajun/py-faster-rcnn/caffe-fast-rcnn)
-set(CUDA_INCLUDE /usr/local/cuda-8.0/include)
-# set(HDF5_INCLUDE /usr/include/hdf5/serial)
+set(CUDA_PATH /usr/local/cuda)
+
 include_directories(include)
 include_directories(${CAFFE_PATH}/include ${CAFFE_PATH}/build/src)
-include_directories(${CUDA_INCLUDE})
-# include_directories(${HDF5_INCLUDE})
+include_directories(${CUDA_PATH}/include)
 
+link_directories(/usr/local/lib)
 link_directories(${CAFFE_PATH}/build/lib)
+link_directories(${CUDA_PATH}/lib)
+link_directories(${CUDA_PATH}/lib64)
 
-set(SOURCE_FILES
-    include/class_independent_tracker.hpp
-    include/multi_target_detector.hpp
-    include/real_time_monitor.hpp
-    src/class_independent_tracker.cpp
-    src/real_time_monitor.cpp
-        src/class_independent_tracker.cpp
-        src/target.cpp
-)
+# set(SOURCE_FILES
+#    include/class_independent_tracker.hpp
+#    include/multi_target_detector.hpp
+#    include/real_time_monitor.hpp
+#    src/class_independent_tracker.cpp
+#    src/real_time_monitor.cpp
+#        src/class_independent_tracker.cpp
+#        src/target.cpp
+# )
 
 # add_executable(supervisory_frame ${SOURCE_FILES})
 add_executable(multi_target_detector src/multi_target_detector.cpp src/target.cpp)
@@ -35,6 +37,7 @@ set(OpenCV_DIR /home/dujiajun/opencv-3.2.0/build)
 FIND_PACKAGE(OpenCV REQUIRED)
 # TARGET_LINK_LIBRARIES(supervisory_frame ${OpenCV_LIBS})
 TARGET_LINK_LIBRARIES(multi_target_detector ${OpenCV_LIBS})
+# TARGET_LINK_LIBRARIES(target ${OpenCV_LIBS})
 
 # find_package(Threads REQUIRED)
 # if(THREADS_HAVE_PTHREAD_ARG)
@@ -45,5 +48,4 @@ TARGET_LINK_LIBRARIES(multi_target_detector ${OpenCV_LIBS})
 #    target_link_libraries(supervisory_frame ${CMAKE_THREAD_LIBS_INIT})
 # endif()
 
-target_link_libraries(multi_target_detector libcaffe.so)
-
+target_link_libraries(multi_target_detector -lcudart -lcublas -lcurand -lglog -lgflags -lprotobuf -lleveldb -lsnappy -llmdb -lboost_system -lhdf5_hl -lhdf5 -lm -lopencv_core -lopencv_highgui -lopencv_imgproc -lboost_thread -lstdc++ -lcblas -latlas -lcaffe)
