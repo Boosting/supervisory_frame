@@ -40,7 +40,8 @@ MultiTargetDetector::MultiTargetDetector(const string& model_file, const string&
 }
 Blob<float>* MultiTargetDetector::createImageBlob(const Mat& image){
     int image_channels = 3, image_height = image.rows, image_width = image.cols;
-    Blob<float>* image_blob = new Blob<float>(1, image_channels, image_height, image_width); //may cause memory leak
+    vector<int> image_shape={1, 3, image_height, image_width};
+	Blob<float>* image_blob = new Blob<float>(image_shape); //may cause memory leak
 
     //get the blobproto
     BlobProto blob_proto;
@@ -90,16 +91,33 @@ void printVec(const vector<vector<float> > &vec){
 	}
 	cout<<endl;
 }
+
+Blob<float>* MultiTargetDetector::createImInfoBlob(const Mat& image){
+    int image_channels = 3, image_height = image.rows, image_width = image.cols;
+    vector<int> im_info_shape={1,3};
+	Blob<float>* im_info_blob = new Blob<float>(im_info_shape);
+	float* data = im_info_blob->mutable_cpu_data();
+	data[0]=image_height, data[1]=image_width, data[2]=1;
+    return im_info_blob;
+}
+
 vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     //Only single-image batch implemented, and no image pyramid
 
     Blob<float>* image_blob = createImageBlob(image);
-    vector<Blob<float>*> bottom; bottom.push_back(image_blob);
+    Blob<float>* im_info_blob = createImInfoBlob(image);
+    vector<Blob<float>*> bottom;
+    bottom.push_back(image_blob);
+    bottom.push_back(im_info_blob);
     float type = 0.0;
-	Blob<float>* input_layer = net->input_blobs()[0];
-	input_layer->Reshape(1, 3, image.rows, image.cols);
+	vector<int> image_shape = {1, 3, image.rows, image.cols};
+	vector<int> im_info_shape = {1, 3};
+	cout<<net->input_blobs().size()<<endl;
+	net->input_blobs()[0]->Reshape(image_shape);
+	net->input_blobs()[1]->Reshape(im_info_shape);
 	/* Forward dimension change to all layers. */
 	net->Reshape();
+	cout<<"finish reshape"<<endl;
 	net->Forward(bottom, &type);
     vector<vector<float> > rois = getOutputData("rois");
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
