@@ -39,47 +39,22 @@ MultiTargetDetector::MultiTargetDetector(const string& model_file, const string&
 
 }
 Blob<float>* MultiTargetDetector::createImageBlob(const Mat& image){
-    int image_channels = 3, image_height = image.rows, image_width = image.cols;
-    vector<int> image_shape={1, 3, image_height, image_width};
+    int image_num = 1, image_channels = 3, image_height = image.rows, image_width = image.cols;
+    vector<int> image_shape={image_num, image_channels, image_height, image_width};
 	Blob<float>* image_blob = new Blob<float>(image_shape); //may cause memory leak
+    float* image_blob_data = image_blob->mutable_cpu_data();
 
-    //get the blobproto
-    BlobProto blob_proto;
-    blob_proto.set_num(1);
-    blob_proto.set_channels(image_channels);
-    blob_proto.set_height(image_height);
-    blob_proto.set_width(image_width);
-    const int data_size = image_channels*image_height*image_width;
-    for (int i = 0; i < data_size; ++i) {
-        blob_proto.add_data(0.);
-    }
-
-    for(int j=0;j<image_height;j++)
+    for(int j=0;j<image_height;j++) //may need speed up
     {
         const uchar *data = image.ptr<uchar>(j);
         for(int k=0;k<image_width;k++){
             for(int i=0;i<image_channels;i++){
                 int pos=(i*image_height+j)*image_width+k;
-                blob_proto.set_data(pos, blob_proto.data(pos) + (int)(*data));
+                image_blob_data[pos] = (int)(*data));
                 data++;
             }
         }
     }
-
-/*	int pos=0;
-	for(int i=0;i<image_channels;i++){
-		cout<<"channel "<<i<<endl;
-		for(int j=0;j<image_height;j++){
-			for(int k=0;k<image_width;k++){
-				cout<<blob_proto.data(pos++)<<" ";	
-			}
-			cout<<endl;
-		}
-	} */
-
-    //set data into blob
-    image_blob->FromProto(blob_proto);
-
     return image_blob;
 }
 void printVec(const vector<vector<float> > &vec){
@@ -93,7 +68,7 @@ void printVec(const vector<vector<float> > &vec){
 }
 
 Blob<float>* MultiTargetDetector::createImInfoBlob(const Mat& image){
-    int image_channels = 3, image_height = image.rows, image_width = image.cols;
+    int image_height = image.rows, image_width = image.cols;
     vector<int> im_info_shape={1,3};
 	Blob<float>* im_info_blob = new Blob<float>(im_info_shape);
 	float* data = im_info_blob->mutable_cpu_data();
@@ -106,19 +81,14 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
 
     Blob<float>* image_blob = createImageBlob(image);
     Blob<float>* im_info_blob = createImInfoBlob(image);
-    vector<Blob<float>*> bottom;
-    bottom.push_back(image_blob);
-    bottom.push_back(im_info_blob);
+    vector<Blob<float>*> bottom = {image_blob, im_info_blob};
     float type = 0.0;
 	vector<int> image_shape = {1, 3, image.rows, image.cols};
-//	vector<int> im_info_shape = {1, 3};
-//	cout<<net->input_blobs().size()<<endl;
 	net->input_blobs()[0]->Reshape(image_shape);
-//	net->input_blobs()[1]->Reshape(im_info_shape);
-	/* Forward dimension change to all layers. */
 	net->Reshape();
-	cout<<"finish reshape"<<endl;
+
 	net->Forward(bottom, &type);
+
     vector<vector<float> > rois = getOutputData("rois");
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
     vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
@@ -144,7 +114,7 @@ vector<vector<float> > MultiTargetDetector::getOutputData(string blob_name)
     int num = blob_ptr->num();
     int channels = blob_ptr->channels();
     vector<vector<float> > output_data(num, vector<float>(channels));
-cout<<"num "<<num<<" channels "<<channels<<" "<<blob_ptr->height()<<" "<<blob_ptr->width()<<endl;
+cout<<"num "<<num<<" channels "<<channels<<" "<<endl;
 	for(int i=0;i<num;i++){
         for(int j=0;j<channels;j++){
             output_data[i][j] = blob_data[i*num+j];
