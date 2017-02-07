@@ -97,13 +97,13 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
 vector<vector<float> > MultiTargetDetector::getOutputData(string blob_name)
 {
 	boost::shared_ptr<Blob<float> > blob_ptr = net->blob_by_name(blob_name);
-    int blob_cnt = blob_ptr->count();
     const float* blob_data = blob_ptr->cpu_data();
-    int second_layer_size = blob_cnt / roi_num;
-    vector<vector<float> > output_data(roi_num, vector<float>(second_layer_size));
-    for(int i=0;i<roi_num;i++){
-        for(int j=0;j<second_layer_size;j++){
-            output_data[i][j] = blob_data[i*roi_num+j];
+    int num = blob_ptr->num();
+    int channels = blob_ptr->channels();
+    vector<vector<float> > output_data(num, vector<float>(channels));
+    for(int i=0;i<num;i++){
+        for(int j=0;j<channels;j++){
+            output_data[i][j] = blob_data[i*num+j];
         }
     }
     return output_data;
