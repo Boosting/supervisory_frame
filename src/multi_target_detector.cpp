@@ -178,7 +178,7 @@ vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > 
         for(int i=0;i<roi_num;i++){
             // can speed up by delete low score bbox
             float score=cls_prob[i][cls_id];
-            int x1=bbox[i][cls_id][0], y1=bbox[i][cls_id][1], x2=bbox[cls_id][2], y2=bbox[cls_id][3];
+            int x1=bbox[i][cls_id][0], y1=bbox[i][cls_id][1], x2=bbox[i][cls_id][2], y2=bbox[i][cls_id][3];
             if(x1>x2||y1>y2) continue; // delete wrong position
             bbox_score.push_back({x1, y1, x2, y2, score});
         }
