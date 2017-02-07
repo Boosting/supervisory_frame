@@ -161,7 +161,7 @@ vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > 
         cout<<"cls id: "<<cls_id<<" bbox_score num: "<<bbox_score.size()<<endl;
 
         vector<bool> is_suppressed(bbox_score.size(), false);
-        for(int i=0;i<bbox_score.size()-1;i++){
+        for(int i=0;i<bbox_score.size();i++){
             if(is_suppressed[i]) continue;
             float lx1=bbox_score[i][0], ly1=bbox_score[i][1], lx2=bbox_score[i][2], ly2=bbox_score[i][3];
             for(int j=i+1;j<bbox_score.size();j++){
