@@ -117,7 +117,7 @@ vector<vector<float> > MultiTargetDetector::getOutputData(string blob_name)
 cout<<"num "<<num<<" channels "<<channels<<" "<<endl;
 	for(int i=0;i<num;i++){
         for(int j=0;j<channels;j++){
-            output_data[i][j] = blob_data[i*num+j];
+            output_data[i][j] = blob_data[i*channels+j];
         }
     }
     return output_data;
