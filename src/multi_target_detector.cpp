@@ -50,7 +50,7 @@ Blob<float>* MultiTargetDetector::createImageBlob(const Mat& image){
         for(int k=0;k<image_width;k++){
             for(int i=0;i<image_channels;i++){
                 int pos=(i*image_height+j)*image_width+k;
-                image_blob_data[pos] = (int)(*data));
+                image_blob_data[pos] = (int)(*data);
                 data++;
             }
         }
