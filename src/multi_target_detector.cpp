@@ -111,10 +111,10 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     bottom.push_back(im_info_blob);
     float type = 0.0;
 	vector<int> image_shape = {1, 3, image.rows, image.cols};
-	vector<int> im_info_shape = {1, 3};
-	cout<<net->input_blobs().size()<<endl;
+//	vector<int> im_info_shape = {1, 3};
+//	cout<<net->input_blobs().size()<<endl;
 	net->input_blobs()[0]->Reshape(image_shape);
-	net->input_blobs()[1]->Reshape(im_info_shape);
+//	net->input_blobs()[1]->Reshape(im_info_shape);
 	/* Forward dimension change to all layers. */
 	net->Reshape();
 	cout<<"finish reshape"<<endl;
