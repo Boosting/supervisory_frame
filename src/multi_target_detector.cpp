@@ -154,7 +154,7 @@ cout<<"num "<<num<<" channels "<<channels<<" "<<blob_ptr->height()<<" "<<blob_pt
 }
 
 vector<vector<vector<int> > > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred){
-    vector<vector<vector<int> > > bbox(roi_num, vector<int>(cls_num, vector<int>(4)));
+    vector<vector<vector<int> > > bbox(roi_num, vector<vector<int> >(cls_num, vector<int>(4)));
     for(int i=0;i<roi_num;i++) {
         float x1 = rois[i][1], y1 = rois[i][2], x2 = rois[i][3], y2 = rois[i][4]; //rois[i][0] is not position
         float width = x2 - x1 + 1, height = y2 - y1 + 1, center_x = x1 + width * 0.5, center_y = y1 + height * 0.5;
