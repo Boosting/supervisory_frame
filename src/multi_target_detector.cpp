@@ -15,7 +15,6 @@ using namespace caffe;
 using namespace std;
 
 MultiTargetDetector::MultiTargetDetector(const string& model_file, const string& trained_file, bool useGPU) {
-    Caffe::set_phase(Caffe::TEST);
     if(useGPU) {
         Caffe::set_mode(Caffe::GPU);
         Caffe::SetDevice(0); //may implement detecting gpu id automatically later
@@ -23,7 +22,7 @@ MultiTargetDetector::MultiTargetDetector(const string& model_file, const string&
     else Caffe::set_mode(Caffe::CPU);
 
     /* Load the network. */
-    net.reset(new Net<float>(model_file, Caffe::TEST));
+    net.reset(new Net<float>(model_file, caffe::TEST));
     net->CopyTrainedLayersFrom(trained_file);
 
 //    CHECK_EQ(net->num_inputs(), 1) << "Network should have exactly one input.";
