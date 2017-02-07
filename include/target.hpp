@@ -9,11 +9,22 @@ using namespace cv;
 /**
  *
  */
+
 class Target {
 private:
     Rect region;
     Mat image;
+    TARGET_CLASS target_class;
 public:
+    enum TARGET_CLASS {
+        PEDESTRIAN,
+        CAR,
+        CYCLIST,
+        UNKNOWN
+    };
+    Target(TARGET_CLASS t=UNKNOWN);
+    TARGET_CLASS getClass() const;
+    void setClass(TARGET_CLASS t);
     Rect getRegion() const;
     void setRegion(Rect r);
     Mat getImage() const;

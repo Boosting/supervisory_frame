@@ -103,8 +103,20 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
         cout<<"x1: "<<bbox_cls[i][0]<<" y1: "<<bbox_cls[i][1]<<" x2: "<<bbox_cls[i][2]<<" y2: "<<bbox_cls[i][3]<<endl;
         cout<<"cls: "<<bbox_cls[i][4]<<endl;
     }
+
     //translate cls to Target
-    return vector<Target>();
+    int target_num = bbox_cls.size();
+    vector<Target> target_vec(target_num);
+    vector<Target::TARGET_CLASS> idToClass={Target::UNKNOWN, Target::CAR, Target::PEDESTRIAN, Target::CYCLIST};
+    for(int i=0;i<target_num;i++){
+        Target &target = target_vec[i];
+        vector<int> &vec=bbox_cls[i];
+        int class_id = vec[4];
+        Target::TARGET_CLASS target_class = (class_id >= 0 && class_id < 4) ? idToClass[class_id] : Target::UNKNOWN;
+        target.setClass(target_class);
+        target.setRegion({vec[0], vec[1], vec[2], vec[3]});
+    }
+    return target_vec;
 }
 
 vector<vector<float> > MultiTargetDetector::getOutputData(string blob_name)
