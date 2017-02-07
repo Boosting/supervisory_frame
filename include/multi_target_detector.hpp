@@ -22,7 +22,7 @@ private:
     Blob<float>* createImInfoBlob(const Mat& image);
     vector<vector<float> > getOutputData(string blob_name);
     vector<vector<vector<int> > > bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred);
-    vector<vector<int> > nms(const vector<vector<vector<int> > > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.3);
+    vector<vector<int> > nms(const vector<vector<vector<int> > > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.3, float min_trust_score = 0.1);
 };
 
 #endif //SUPERVISORY_FRAME_MULTI_TARGET_DETECTOR_HPP

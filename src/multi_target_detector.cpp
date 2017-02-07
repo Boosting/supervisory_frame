@@ -141,7 +141,7 @@ vector<vector<vector<int> > > MultiTargetDetector::bbox_transform(const vector<v
     return bbox;
 }
 
-vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > > &bbox, const vector<vector<float> > &cls_prob, float thresh) {
+vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > > &bbox, const vector<vector<float> > &cls_prob, float thresh, float min_trust_score) {
     vector<vector<int> > bbox_cls; //x1, y1, x2, y2, cls
     for(int cls_id=1;cls_id<cls_num;cls_id++){
         vector<vector<float> > bbox_score;
@@ -149,7 +149,7 @@ vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > 
             // can speed up by delete low score bbox
             float score=cls_prob[i][cls_id];
             int x1=bbox[i][cls_id][0], y1=bbox[i][cls_id][1], x2=bbox[i][cls_id][2], y2=bbox[i][cls_id][3];
-            if(x1>x2||y1>y2) continue; // delete wrong position
+            if(score<min_trust_score || x1>x2 || y1>y2) continue; // remove low score or wrong position
             bbox_score.push_back({x1, y1, x2, y2, score});
         }
         sort(bbox_score.begin(), bbox_score.end(),
@@ -157,6 +157,8 @@ vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > 
                  return bbox1[4]>bbox2[4];
              }
         );
+
+        cout<<"cls id: "<<cls_id<<" bbox_score num: "<<bbox_score.size()<<endl;
 
         vector<bool> is_suppressed(bbox_score.size(), false);
         for(int i=0;i<bbox_score.size()-1;i++){
