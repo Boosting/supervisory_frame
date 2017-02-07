@@ -15,11 +15,15 @@ using namespace caffe;
 using namespace std;
 
 MultiTargetDetector::MultiTargetDetector(const string& model_file, const string& trained_file, bool useGPU) {
-    if(useGPU) Caffe::set_mode(Caffe::GPU);
+    Caffe::set_phase(Caffe::TEST);
+    if(useGPU) {
+        Caffe::set_mode(Caffe::GPU);
+        Caffe::SetDevice(0); //may implement detecting gpu id automatically later
+    }
     else Caffe::set_mode(Caffe::CPU);
 
     /* Load the network. */
-    net.reset(new Net<float>(model_file, TEST));
+    net.reset(new Net<float>(model_file, Caffe::TEST));
     net->CopyTrainedLayersFrom(trained_file);
 
 //    CHECK_EQ(net->num_inputs(), 1) << "Network should have exactly one input.";
@@ -35,26 +39,45 @@ MultiTargetDetector::MultiTargetDetector(const string& model_file, const string&
     //    << "Number of labels is different from the output layer dimension.";
 
 }
+Blob<float>* MultiTargetDetector::createImageBlob(const Mat& image){
+    int image_channels = 3, image_height = image.cols, image_width = image.rows;
+    Blob<float>* image_blob = new Blob<float>(1, image_channels, image_height, image_width); //may cause memory leak
 
+    //get the blobproto
+    BlobProto blob_proto;
+    blob_proto.set_num(1);
+    blob_proto.set_channels(image_channels);
+    blob_proto.set_height(image_height);
+    blob_proto.set_width(image_width);
+    const int data_size = image_channels*image_height*image_width;
+    for (int i = 0; i < data_size; ++i) {
+        blob_proto.add_data(0.);
+    }
+
+    for(int j=0;j<image_height;j++)
+    {
+        const uchar *data = image.ptr<uchar>(j);
+        for(int k=0;k<image_width;k++){
+            for(int i=0;i<image_channels;i++){
+                int pos=(i*image_height+j)*image_width+k;
+                blob_proto.set_data(pos, blob_proto.data(pos) + (uint8_t)(*data));
+                data++;
+            }
+        }
+    }
+
+    //set data into blob
+    image_blob->FromProto(blob_proto);
+
+    return image_blob;
+}
 vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     //Only single-image batch implemented, and no image pyramid
 
-    Blob<float>* input_layer = net->input_blobs()[0];
-    int image_height = image.cols, image_width = image.rows;
-    input_layer->Reshape(1, 3, image_height, image_width); // channel: 3
-    net->Reshape();
-
-    vector<cv::Mat> input_channels;
-    float* input_data = input_layer->mutable_cpu_data();
-    for (int i = 0; i < input_layer->channels(); ++i) {
-        cv::Mat channel(image_height, image_width, CV_32FC1, input_data);
-        input_channels.push_back(channel);
-        input_data += image_width * image_height;
-    }
-
-    // need to preprocess the image
-    cv::split(image, input_channels);
-    net->ForwardPrefilled();
+    Blob<float>* image_blob = createImageBlob(image);
+    vector<Blob<float>*> bottom; bottom.push_back(image_blob);
+    float type = 0.0;
+    net->Forward(bottom, &type);
 
     vector<vector<float> > rois = getOutputData("rois");
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
