@@ -39,7 +39,7 @@ MultiTargetDetector::MultiTargetDetector(const string& model_file, const string&
 
 }
 Blob<float>* MultiTargetDetector::createImageBlob(const Mat& image){
-    int image_channels = 3, image_height = image.cols, image_width = image.rows;
+    int image_channels = 3, image_height = image.rows, image_width = image.cols;
     Blob<float>* image_blob = new Blob<float>(1, image_channels, image_height, image_width); //may cause memory leak
 
     //get the blobproto
@@ -76,8 +76,11 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     Blob<float>* image_blob = createImageBlob(image);
     vector<Blob<float>*> bottom; bottom.push_back(image_blob);
     float type = 0.0;
-    net->Forward(bottom, &type);
-
+	Blob<float>* input_layer = net->input_blobs()[0];
+	input_layer->Reshape(1, 3, image.rows, image.cols);
+	/* Forward dimension change to all layers. */
+	net->Reshape();
+	net->Forward(bottom, &type);
     vector<vector<float> > rois = getOutputData("rois");
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
     vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
@@ -100,7 +103,8 @@ vector<vector<float> > MultiTargetDetector::getOutputData(string blob_name)
     int num = blob_ptr->num();
     int channels = blob_ptr->channels();
     vector<vector<float> > output_data(num, vector<float>(channels));
-    for(int i=0;i<num;i++){
+cout<<"num "<<num<<" channels "<<channels<<endl;
+	for(int i=0;i<num;i++){
         for(int j=0;j<channels;j++){
             output_data[i][j] = blob_data[i*num+j];
         }
