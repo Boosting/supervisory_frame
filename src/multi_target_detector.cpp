@@ -57,15 +57,15 @@ Blob<float>* MultiTargetDetector::createImageBlob(const Mat& image){
     }
     return image_blob;
 }
-void printVec(const vector<vector<float> > &vec){
-	for(int i=0;i<vec.size();i++){
-		for(int j=0;j<vec[i].size();j++){
-			cout<<vec[i][j]<<" ";
-		}
-		cout<<endl;
-	}
-	cout<<endl;
-}
+//void printVec(const vector<vector<float> > &vec){
+//	for(int i=0;i<vec.size();i++){
+//		for(int j=0;j<vec[i].size();j++){
+//			cout<<vec[i][j]<<" ";
+//		}
+//		cout<<endl;
+//	}
+//	cout<<endl;
+//}
 
 Blob<float>* MultiTargetDetector::createImInfoBlob(const Mat& image){
     int image_height = image.rows, image_width = image.cols;
@@ -93,9 +93,9 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
     vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
     roi_num = rois.size();
-printVec(rois);
-printVec(cls_prob);
-printVec(bbox_pred);
+//printVec(rois);
+//printVec(cls_prob);
+//printVec(bbox_pred);
     vector<vector<vector<int> > > bbox = bbox_transform(rois, bbox_pred);
 
     vector<vector<int> > bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
