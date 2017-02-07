@@ -65,10 +65,30 @@ Blob<float>* MultiTargetDetector::createImageBlob(const Mat& image){
         }
     }
 
+/*	int pos=0;
+	for(int i=0;i<image_channels;i++){
+		cout<<"channel "<<i<<endl;
+		for(int j=0;j<image_height;j++){
+			for(int k=0;k<image_width;k++){
+				cout<<blob_proto.data(pos++)<<" ";	
+			}
+			cout<<endl;
+		}
+	} */
+
     //set data into blob
     image_blob->FromProto(blob_proto);
 
     return image_blob;
+}
+void printVec(const vector<vector<float> > &vec){
+	for(int i=0;i<vec.size();i++){
+		for(int j=0;j<vec[i].size();j++){
+			cout<<vec[i][j]<<" ";
+		}
+		cout<<endl;
+	}
+	cout<<endl;
 }
 vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     //Only single-image batch implemented, and no image pyramid
@@ -84,7 +104,9 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     vector<vector<float> > rois = getOutputData("rois");
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
     vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
-
+printVec(rois);
+printVec(cls_prob);
+printVec(bbox_pred);
     vector<vector<int> > bbox = bbox_transform(rois, bbox_pred);
 
     vector<vector<int> > bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
@@ -103,7 +125,7 @@ vector<vector<float> > MultiTargetDetector::getOutputData(string blob_name)
     int num = blob_ptr->num();
     int channels = blob_ptr->channels();
     vector<vector<float> > output_data(num, vector<float>(channels));
-cout<<"num "<<num<<" channels "<<channels<<endl;
+cout<<"num "<<num<<" channels "<<channels<<" "<<blob_ptr->height()<<" "<<blob_ptr->width()<<endl;
 	for(int i=0;i<num;i++){
         for(int j=0;j<channels;j++){
             output_data[i][j] = blob_data[i*num+j];
