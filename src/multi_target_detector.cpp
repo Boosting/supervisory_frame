@@ -70,11 +70,29 @@ Blob<float>* MultiTargetDetector::createImageBlob(const Mat& image){
 
     return image_blob;
 }
+
+Blob<float>* MultiTargetDetector::createImInfoBlob(const Mat& image){
+    int image_channels = 3, image_height = image.rows, image_width = image.cols;
+    Blob<float>* im_info_blob = new Blob<float>(1, 3);
+    BlobProto blob_proto;
+    blob_proto.set_num(1);
+    blob_proto.set_channels(3);
+    blob_proto.add_data(image_height);
+    blob_proto.add_data(image_width);
+    blob_proto.add_data(1);
+    im_info_blob->FromProto(blob_proto);
+    return im_info_blob;
+}
+
 vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     //Only single-image batch implemented, and no image pyramid
 
     Blob<float>* image_blob = createImageBlob(image);
-    vector<Blob<float>*> bottom; bottom.push_back(image_blob);
+    Blob<float>* im_info_blob = createImInfoBlob(image)
+    vector<Blob<float>*> bottom;
+    bottom.push_back(image_blob);
+    bottom.push_back(im_info_blob);
+
     float type = 0.0;
 	Blob<float>* input_layer = net->input_blobs()[0];
 	input_layer->Reshape(1, 3, image.rows, image.cols);
