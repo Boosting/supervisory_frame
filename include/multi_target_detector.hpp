@@ -15,14 +15,14 @@ public:
 
 private:
     boost::shared_ptr<Net<float> > net;
-    int roi_num = 4096;
+    int roi_num = 0;
     int cls_num = 4; // include __background__
     //vector<Target> label_vec;
     Blob<float>* createImageBlob(const Mat& image);
     Blob<float>* createImInfoBlob(const Mat& image);
     vector<vector<float> > getOutputData(string blob_name);
-    vector<vector<int> > bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred);
-    vector<vector<int> > nms(const vector<vector<int> > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.3);
+    vector<vector<vector<int> > > bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred);
+    vector<vector<int> > nms(const vector<vector<vector<int> > > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.3);
 };
 
 #endif //SUPERVISORY_FRAME_MULTI_TARGET_DETECTOR_HPP

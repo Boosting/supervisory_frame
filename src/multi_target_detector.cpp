@@ -122,10 +122,11 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
     vector<vector<float> > rois = getOutputData("rois");
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
     vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
+    roi_num = rois.size();
 printVec(rois);
 printVec(cls_prob);
 printVec(bbox_pred);
-    vector<vector<int> > bbox = bbox_transform(rois, bbox_pred);
+    vector<vector<vector<int> > > bbox = bbox_transform(rois, bbox_pred);
 
     vector<vector<int> > bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
     for(int i=0;i<bbox_cls.size();i++){
@@ -152,29 +153,32 @@ cout<<"num "<<num<<" channels "<<channels<<" "<<blob_ptr->height()<<" "<<blob_pt
     return output_data;
 }
 
-vector<vector<int> > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred){
-    vector<vector<int> > bbox(roi_num, vector<int>(4));
-    for(int i=0;i<roi_num;i++){
-        float x1=rois[i][1], y1=rois[i][2], x2=rois[i][3],y2=rois[i][4]; //rois[i][0] is not position
-        float width=x2-x1+1, height=y2-y1+1, center_x=x1+width*0.5, center_y=y1+height*0.5;
-        float dx=bbox_pred[i][0], dy=bbox_pred[i][1], dw=bbox_pred[i][2], dh=bbox_pred[i][3];
-        float pred_width = width * exp(dw), pred_height = height * exp(dh);
-        float pred_center_x = dx * width + center_x, pred_center_y = dy * height + center_y;
-        float pred_x1 = pred_center_x - pred_width * 0.5, pred_x2 = pred_center_x + pred_width * 0.5;
-        float pred_y1 = pred_center_y - pred_height * 0.5, pred_y2 = pred_center_y + pred_height * 0.5;
-        bbox[i][0]=pred_x1, bbox[i][1]=pred_y1, bbox[i][2]=pred_x2, bbox[i][3]=pred_y2;  // convert float to int may be ambiguous
+vector<vector<vector<int> > > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred){
+    vector<vector<vector<int> > > bbox(roi_num, vector<int>(cls_num, vector<int>(4)));
+    for(int i=0;i<roi_num;i++) {
+        float x1 = rois[i][1], y1 = rois[i][2], x2 = rois[i][3], y2 = rois[i][4]; //rois[i][0] is not position
+        float width = x2 - x1 + 1, height = y2 - y1 + 1, center_x = x1 + width * 0.5, center_y = y1 + height * 0.5;
+        for (int j = 0; j < cls_num; j++) {
+            int offset = j * cls_num;
+            float dx = bbox_pred[i][offset], dy = bbox_pred[i][offset+1], dw = bbox_pred[i][offset+2], dh = bbox_pred[i][offset+3];
+            float pred_width = width * exp(dw), pred_height = height * exp(dh);
+            float pred_center_x = dx * width + center_x, pred_center_y = dy * height + center_y;
+            float pred_x1 = pred_center_x - pred_width * 0.5, pred_x2 = pred_center_x + pred_width * 0.5;
+            float pred_y1 = pred_center_y - pred_height * 0.5, pred_y2 = pred_center_y + pred_height * 0.5;
+            bbox[i][j][0] = pred_x1, bbox[i][j][1] = pred_y1, bbox[i][j][2] = pred_x2, bbox[i][j][3] = pred_y2;  // convert float to int may be ambiguous
+        }
     }
     return bbox;
 }
 
-vector<vector<int> > MultiTargetDetector::nms(const vector<vector<int> > &bbox, const vector<vector<float> > &cls_prob, float thresh) {
+vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > > &bbox, const vector<vector<float> > &cls_prob, float thresh) {
     vector<vector<int> > bbox_cls; //x1, y1, x2, y2, cls
     for(int cls_id=1;cls_id<cls_num;cls_id++){
         vector<vector<float> > bbox_score;
         for(int i=0;i<roi_num;i++){
             // can speed up by delete low score bbox
             float score=cls_prob[i][cls_id];
-            int x1=bbox[i][0], y1=bbox[i][1], x2=bbox[i][2], y2=bbox[i][3];
+            int x1=bbox[i][cls_id][0], y1=bbox[i][cls_id][1], x2=bbox[cls_id][2], y2=bbox[cls_id][3];
             if(x1>x2||y1>y2) continue; // delete wrong position
             bbox_score.push_back({x1, y1, x2, y2, score});
         }
