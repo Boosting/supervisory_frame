@@ -122,7 +122,8 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
         int class_id = vec[4];
         Target::TARGET_CLASS target_class = (class_id >= 0 && class_id < 4) ? idToClass[class_id] : Target::UNKNOWN;
         target.setClass(target_class);
-        target.setRegion({vec[0], vec[1], vec[2], vec[3]});
+        int x1=vec[0], y1=vec[1], x2=vec[2], y2=vec[3];
+        target.setRegion({x1, y1, x2-x1+1, y2-y1+1});
     }
 
     return target_vec;

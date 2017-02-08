@@ -57,14 +57,17 @@ vector<Target> RealTimeMonitor::getTargets(){
 }
 void RealTimeMonitor::detect(){
     Mat curImage = getUpdatedImage();
-    targets = detector.detectTargets(curImage);
-    for(Target t: targets){
-        t.setImage(curImage);
+    if(!curImage.empty()) {
+        targets = detector.detectTargets(curImage);
+        for (Target t: targets) {
+            t.setImage(curImage);
+        }
     }
 }
 void RealTimeMonitor::track(){
     for(Target &t: targets){
         Mat preImage = t.getImage(), curImage = getUpdatedImage();
+        if(curImage.empty()) continue;
         Rect preRegion = t.getRegion();
         t.setImage(curImage);
         t.setRegion(tracker.getUpdateRegion(preImage, curImage, preRegion));
