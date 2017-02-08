@@ -2,7 +2,6 @@
 // Created by dujiajun on 1/13/17.
 //
 #include<iostream>
-#include<thread>
 #include "real_time_monitor.hpp"
 using namespace std;
 
@@ -31,9 +30,24 @@ void RealTimeMonitor::run(){
 void RealTimeMonitor::stop(){
     runStatus=false;
 }
+/**
+ * public function
+ *
+ * @return
+ */
 Mat RealTimeMonitor::getCurrentImage(){
-    Mat currentImage;
-    if(cap.isOpened()){
+    shared_lock<shared_mutex> lock(image_mutex);
+    return currentImage;
+}
+/**
+ * private function
+ * get real current image and update it
+ * only main loop thread can update currentImage
+ * @return
+ */
+Mat RealTimeMonitor::getUpdatedImage() {
+    unique_lock<shared_mutex> lock(image_mutex);
+    if(cap.isOpened()) {
         cap >> currentImage;
     }
     return currentImage;
@@ -42,7 +56,7 @@ vector<Target> RealTimeMonitor::getTargets(){
     return targets;
 }
 void RealTimeMonitor::detect(){
-    Mat curImage = getCurrentImage();
+    Mat curImage = getUpdatedImage();
     targets = detector.detectTargets(curImage);
     for(Target t: targets){
         t.setImage(curImage);
@@ -50,7 +64,7 @@ void RealTimeMonitor::detect(){
 }
 void RealTimeMonitor::track(){
     for(Target &t: targets){
-        Mat preImage = t.getImage(), curImage = getCurrentImage();
+        Mat preImage = t.getImage(), curImage = getUpdatedImage();
         Rect preRegion = t.getRegion();
         t.setImage(curImage);
         t.setRegion(tracker.getUpdateRegion(preImage, curImage, preRegion));
