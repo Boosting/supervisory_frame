@@ -15,15 +15,18 @@ using namespace std;
 using namespace cv;
 class RealTimeMonitor {
 public:
-    RealTimeMonitor(MultiTargetDetector d, ClassIndependentTracker t);
+    RealTimeMonitor(string a, MultiTargetDetector d, ClassIndependentTracker t);
     bool isRunning() const;
     void run();
     void stop();
     Mat getCurrentImage();
+    vector<Target> getTargets();
     void detect();
     void track();
     
 private:
+    VideoCapture cap;
+    string address;
     atomic_bool runStatus;
     vector<Target> targets; // targets needs lock to prevent read operation when written
     MultiTargetDetector detector;

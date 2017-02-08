@@ -6,7 +6,7 @@
 #include "real_time_monitor.hpp"
 using namespace std;
 
-RealTimeMonitor::RealTimeMonitor(MultiTargetDetector d, ClassIndependentTracker t):detector(d), tracker(t) {}
+RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector d, ClassIndependentTracker t):address(a), detector(d), tracker(t) {}
 
 void loop(RealTimeMonitor *monitor){
     int cnt=0;
@@ -23,11 +23,22 @@ bool RealTimeMonitor::isRunning() const {
 }
 void RealTimeMonitor::run(){
     if(runStatus) return;
+    cap.open(address);
     thread loopThread(loop, this);
     loopThread.detach();
 }
 void RealTimeMonitor::stop(){
     runStatus=false;
+}
+Mat RealTimeMonitor::getCurrentImage(){
+    Mat currentImage = NULL;
+    if(cap.isOpened()){
+        cap >> currentImage;
+    }
+    return currentImage;
+}
+vector<Target> RealTimeMonitor::getTargets(){
+    return targets;
 }
 void RealTimeMonitor::detect(){
     Mat curImage = getCurrentImage();
@@ -46,13 +57,22 @@ void RealTimeMonitor::track(){
 }
 
 int main(){
-    MultiTargetDetector detector;
+    string address="/home/dujiajun/car_person_video.mp4";
+    string model_file="/home/dujiajun/py-faster-rcnn/models/kitti/VGG16/faster_rcnn_end2end/test.prototxt";
+    string trained_file="/home/dujiajun/py-faster-rcnn/data/kitti/VGG16/faster_rcnn_end2end.caffemodel";
+    MultiTargetDetector detector(model_file, trained_file);
     ClassIndependentTracker tracker;
-    RealTimeMonitor monitor(detector, tracker);
+    RealTimeMonitor monitor(address, detector, tracker);
     monitor.run();
-    cout<<"start"<<endl;
-    for(long long i=0;i<10000000000;i++){
-        if(i%100000000==0) cout<<i<<endl;
+    while (monitor.isRunning())
+    {
+        Mat frame = monitor.getCurrentImage();
+        vector<Target> targets = monitor.getTargets();
+        for(unsigned i=0;i<targets.size();i++){
+            rectangle(frame, targets[i].getRegion(), Scalar( 255, 0, 0 ), 2, 1);
+        }
+        imshow("monitor", frame);
+        if (cvWaitKey(10) == 'q')
+            break;
     }
-    while(true){}
 }

@@ -200,15 +200,15 @@ vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > 
     return bbox_cls;
 }
 
-int main()
-{
-    string model_file="/home/dujiajun/py-faster-rcnn/models/kitti/VGG16/faster_rcnn_end2end/test.prototxt";
-    string trained_file="/home/dujiajun/py-faster-rcnn/data/kitti/VGG16/faster_rcnn_end2end.caffemodel";
-    string image_file="/home/dujiajun/kitti/testing/image_2/000456.png";
-    MultiTargetDetector detector(model_file, trained_file);
-    Mat image;
-    image=cv::imread(image_file);
-    cout<<"height: "<<image.rows<<" width: "<<image.cols<<endl;
-    detector.detectTargets(image);
-    return 0;
-}
+//int main()
+//{
+//    string model_file="/home/dujiajun/py-faster-rcnn/models/kitti/VGG16/faster_rcnn_end2end/test.prototxt";
+//    string trained_file="/home/dujiajun/py-faster-rcnn/data/kitti/VGG16/faster_rcnn_end2end.caffemodel";
+//    string image_file="/home/dujiajun/kitti/testing/image_2/000456.png";
+//    MultiTargetDetector detector(model_file, trained_file);
+//    Mat image;
+//    image=cv::imread(image_file);
+//    cout<<"height: "<<image.rows<<" width: "<<image.cols<<endl;
+//    detector.detectTargets(image);
+//    return 0;
+//}
