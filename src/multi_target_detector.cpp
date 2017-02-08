@@ -10,6 +10,10 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
 #include "multi_target_detector.hpp"
 using namespace caffe;
 using namespace std;
@@ -87,7 +91,11 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
 	net->input_blobs()[0]->Reshape(image_shape);
 	net->Reshape();
 
+    clock_t time1, time2;
+    time1 = clock();
 	net->Forward(bottom, &type);
+    time2 = clock();
+    cout<<"forward use time: "<< (double)(time2 - time1) / CLOCKS_PER_SEC <<endl<<endl<<endl;
 
     vector<vector<float> > rois = getOutputData("rois");
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
@@ -116,6 +124,7 @@ vector<Target> MultiTargetDetector::detectTargets(const Mat& image) {
         target.setClass(target_class);
         target.setRegion({vec[0], vec[1], vec[2], vec[3]});
     }
+
     return target_vec;
 }
 

@@ -82,13 +82,13 @@ int main(){
     while (monitor.isRunning())
     {
         Mat frame = monitor.getCurrentImage();
+        if(frame.empty()) continue;
         vector<Target> targets = monitor.getTargets();
         for(Target target: targets){
             Rect region = target.getRegion();
 			rectangle(frame, region, Scalar( 255, 0, 0 ), 2, 1);
         }
         imshow("monitor", frame);
-        if (cvWaitKey(10) == 'q')
-            break;
+        this_thread::sleep_for(chrono::milliseconds(20));
     }
 }
