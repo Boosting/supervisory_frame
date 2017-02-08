@@ -6,7 +6,7 @@
 #include "real_time_monitor.hpp"
 using namespace std;
 
-RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector d, ClassIndependentTracker t):address(a), detector(d), tracker(t) {}
+RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector d, ClassIndependentTracker t):address(a), detector(d), tracker(t), runStatus(false) {}
 
 void loop(RealTimeMonitor *monitor){
     int cnt=0;
@@ -23,7 +23,8 @@ bool RealTimeMonitor::isRunning() const {
 }
 void RealTimeMonitor::run(){
     if(runStatus) return;
-    cap.open(address);
+	cap.open(address);
+	runStatus = true;
     thread loopThread(loop, this);
     loopThread.detach();
 }
@@ -31,7 +32,7 @@ void RealTimeMonitor::stop(){
     runStatus=false;
 }
 Mat RealTimeMonitor::getCurrentImage(){
-    Mat currentImage = NULL;
+    Mat currentImage;
     if(cap.isOpened()){
         cap >> currentImage;
     }
@@ -68,8 +69,9 @@ int main(){
     {
         Mat frame = monitor.getCurrentImage();
         vector<Target> targets = monitor.getTargets();
-        for(unsigned i=0;i<targets.size();i++){
-            rectangle(frame, targets[i].getRegion(), Scalar( 255, 0, 0 ), 2, 1);
+        for(Target target: targets){
+            Rect region = target.getRegion();
+			rectangle(frame, region, Scalar( 255, 0, 0 ), 2, 1);
         }
         imshow("monitor", frame);
         if (cvWaitKey(10) == 'q')

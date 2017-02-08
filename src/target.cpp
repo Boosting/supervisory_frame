@@ -6,7 +6,7 @@
 
 Target::Target(TARGET_CLASS t):target_class(t) {}
 
-TARGET_CLASS Target::getClass() const{
+Target::TARGET_CLASS Target::getClass() const{
     return target_class;
 }
 

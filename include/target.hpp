@@ -11,17 +11,18 @@ using namespace cv;
  */
 
 class Target {
+public:
+	enum TARGET_CLASS {
+		PEDESTRIAN,
+		CAR,
+		CYCLIST,
+		UNKNOWN
+	};
 private:
     Rect region;
     Mat image;
-    TARGET_CLASS target_class;
+	enum TARGET_CLASS target_class;
 public:
-    enum TARGET_CLASS {
-        PEDESTRIAN,
-        CAR,
-        CYCLIST,
-        UNKNOWN
-    };
     Target(TARGET_CLASS t=UNKNOWN);
     TARGET_CLASS getClass() const;
     void setClass(TARGET_CLASS t);
