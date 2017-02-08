@@ -6,7 +6,8 @@
 #define VIDEOSTREAM_REAL_TIME_MONITOR_HPP
 
 #include <opencv/cv.hpp>
-#include<shared_mutex>
+#include <boost/thread/locks.hpp>
+#include <boost/thread/shared_mutex.hpp>
 #include<mutex>
 #include<thread>
 #include <atomic>
@@ -31,7 +32,7 @@ private:
     VideoCapture cap;
     string address;
     Mat currentImage;
-    mutable shared_mutex image_mutex;
+    mutable boost::shared_mutex image_mutex;
     atomic_bool runStatus;
     vector<Target> targets; // targets needs lock to prevent read operation when written
     MultiTargetDetector detector;

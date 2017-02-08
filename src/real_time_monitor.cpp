@@ -36,7 +36,7 @@ void RealTimeMonitor::stop(){
  * @return
  */
 Mat RealTimeMonitor::getCurrentImage(){
-    shared_lock<shared_mutex> lock(image_mutex);
+    boost::shared_lock<boost::shared_mutex> lock(image_mutex);
     return currentImage;
 }
 /**
@@ -46,7 +46,7 @@ Mat RealTimeMonitor::getCurrentImage(){
  * @return
  */
 Mat RealTimeMonitor::getUpdatedImage() {
-    unique_lock<shared_mutex> lock(image_mutex);
+    boost::unique_lock<boost::shared_mutex> lock(image_mutex);
     if(cap.isOpened()) {
         cap >> currentImage;
     }
