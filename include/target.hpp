@@ -4,12 +4,12 @@
 
 #ifndef SUPERVISORY_FRAME_TARGET_HPP
 #define SUPERVISORY_FRAME_TARGET_HPP
-#include <opencv/cv.hpp>
+#include <opencv2/cv.hpp>
 using namespace cv;
-/**
- *
- */
 
+/**
+ * @brief A class recording the class, region and other information of the target detected.
+ */
 class Target {
 public:
 	enum TARGET_CLASS {
@@ -20,6 +20,12 @@ public:
 	};
 private:
     Rect region;
+
+	/**
+	 * @brief The image associated with the target's region.
+	 * At different time, the image and the target's region change.
+	 * So every region is associated with an image
+	 */
     Mat image;
 	enum TARGET_CLASS target_class;
 public:

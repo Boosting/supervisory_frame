@@ -38,7 +38,6 @@ vector<Target> FasterRcnnDetector::detectTargets(const Mat& image) {
     vector<vector<float> > rois = getOutputData("rois");
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
     vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
-    roi_num = rois.size();
 //printVec(rois);
 //printVec(cls_prob);
 //printVec(bbox_pred);

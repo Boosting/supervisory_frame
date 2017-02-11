@@ -18,9 +18,11 @@ using namespace std;
 
 MultiTargetDetector::MultiTargetDetector() {
     idToClass = {Target::UNKNOWN, Target::CAR, Target::PEDESTRIAN, Target::CYCLIST};
+    cls_num = idToClass.size();
 }
 
 vector<vector<vector<int> > > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred){
+    int roi_num = rois.size();
     vector<vector<vector<int> > > bbox(roi_num, vector<vector<int> >(cls_num, vector<int>(4)));
     for(int i=0;i<roi_num;i++) {
         float x1 = rois[i][1], y1 = rois[i][2], x2 = rois[i][3], y2 = rois[i][4]; //rois[i][0] is not position
@@ -40,6 +42,7 @@ vector<vector<vector<int> > > MultiTargetDetector::bbox_transform(const vector<v
 
 vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > > &bbox, const vector<vector<float> > &cls_prob, float thresh, float min_trust_score) {
     vector<vector<int> > bbox_cls; //x1, y1, x2, y2, cls
+    int roi_num = bbox.size();
     for(int cls_id=1;cls_id<cls_num;cls_id++){
         vector<vector<float> > bbox_score;
         for(int i=0;i<roi_num;i++){

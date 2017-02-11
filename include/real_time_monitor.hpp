@@ -5,7 +5,7 @@
 #ifndef VIDEOSTREAM_REAL_TIME_MONITOR_HPP
 #define VIDEOSTREAM_REAL_TIME_MONITOR_HPP
 
-#include <opencv/cv.hpp>
+#include <opencv2/cv.hpp>
 #include <boost/thread/locks.hpp>
 #include <boost/thread/shared_mutex.hpp>
 #include<mutex>
@@ -19,13 +19,52 @@ using namespace std;
 using namespace cv;
 class RealTimeMonitor {
 public:
+    /**
+     * @brief Constructor function.
+     * @param a The IP address of the video stream.
+     * @param d The detector.
+     * @param t The tracker.
+     */
     RealTimeMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t);
+
+    /**
+     * @brief Judge whether the monitor is running.
+     * @return Bool, whether the monitor is running.
+     */
     bool isRunning() const;
+
+    /**
+     * @brief Run the monitor.
+     * Open the video capture, start the detecting and tracking loop.
+     */
     void run();
+
+    /**
+     * @brief Stop the monitor.
+     * Break the detecting and tracking loop, close the video capture.
+     */
     void stop();
+
+    /**
+     * @brief Get the current image.
+     * @return The current image.
+     */
     Mat getCurrentImage();
+
+    /**
+     * @brief Get the detected targets.
+     * @return A vector of the detected targets.
+     */
     vector<Target> getTargets();
+
+    /**
+     * @brief Perform a round of detecting from the current image.
+     */
     void detect();
+
+    /**
+     * @brief Perform a round of tracking for the detected targets.
+     */
     void track();
     
 private:
