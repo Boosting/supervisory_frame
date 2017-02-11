@@ -22,6 +22,7 @@ set(SOURCE_FILES
 #    include/multi_target_detector.hpp
 #    include/real_time_monitor.hpp
 		src/real_time_monitor.cpp
+        src/tracker/kcf_tracker.cpp
         src/class_independent_tracker.cpp
         src/detector/faster_rcnn_detector.cpp
         src/multi_target_detector.cpp
