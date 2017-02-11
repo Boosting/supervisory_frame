@@ -7,46 +7,43 @@
 #include<iostream>
 using namespace std;
 
-RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t):address(a), detector(d), tracker(t), runStatus(false) {}
+RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t)
+        :address(a), detector(d), tracker(t), runStatus(false), stopSignal(false) {}
 
 void loop(RealTimeMonitor *monitor){
     int cnt=0;
-    while(monitor->isRunning()) {
+    while(!monitor->getStopSignal()) {
         if(cnt==0) monitor->detect();
         else monitor->track();
         this_thread::sleep_for(chrono::milliseconds(10));
         cnt++;
         if(cnt==20) cnt=0;
     }
+    monitor->setRunStatus(false);
+    monitor->setStopSignal(false);
 }
 bool RealTimeMonitor::isRunning() const {
     return runStatus;
 }
-void RealTimeMonitor::run(){
+void RealTimeMonitor::run(){ // two threads call run() at the same time may cause error
     if(runStatus) return;
-	cap.open(address);
-	runStatus = true;
+    runStatus = true; stopSignal = false;
+    if(!cap.isOpened()) cap.open(address);
     thread loopThread(loop, this);
     loopThread.detach();
 }
+
 void RealTimeMonitor::stop(){
-    runStatus=false;
+    if(runStatus) {
+        stopSignal = true;
+    }
 }
-/**
- * public function
- *
- * @return
- */
+
 Mat RealTimeMonitor::getCurrentImage(){
     boost::shared_lock<boost::shared_mutex> lock(image_mutex);
     return currentImage;
 }
-/**
- * private function
- * get real current image and update it
- * only main loop thread can update currentImage
- * @return
- */
+
 Mat RealTimeMonitor::getUpdatedImage() {
     boost::unique_lock<boost::shared_mutex> lock(image_mutex);
     if(cap.isOpened()) {
@@ -74,6 +71,18 @@ void RealTimeMonitor::track(){
         t.setImage(curImage);
         t.setRegion(tracker.getUpdateRegion(preImage, curImage, preRegion));
     }
+}
+
+bool RealTimeMonitor::getStopSignal(){
+    return stopSignal;
+}
+
+void RealTimeMonitor::setStopSignal(bool s){
+    stopSignal = s;
+}
+
+void RealTimeMonitor::setRunStatus(bool r){
+    runStatus = r;
 }
 
 int main(){

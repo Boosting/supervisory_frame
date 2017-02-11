@@ -35,13 +35,14 @@ public:
 
     /**
      * @brief Run the monitor.
-     * Open the video capture, start the detecting and tracking loop.
+     * If the video capture is not open, open the video capture.
+     * Start the detecting and tracking loop.
      */
     void run();
 
     /**
      * @brief Stop the monitor.
-     * Break the detecting and tracking loop, close the video capture.
+     * Attention: after call this function, the monitor doesn't stop immediately.
      */
     void stop();
 
@@ -66,16 +67,37 @@ public:
      * @brief Perform a round of tracking for the detected targets.
      */
     void track();
-    
+
+    /**
+     * Get the stop signal.
+     * @return Bool, the stop signal.
+     */
+    bool getStopSignal();
+
+    /**
+     * Set the stop signal.
+     * @param s The stop signal.
+     */
+    void setStopSignal(bool s);
+
+    void setRunStatus(bool r);
+
 private:
     VideoCapture cap;
     string address;
     Mat currentImage;
     mutable boost::shared_mutex image_mutex;
+    atomic_bool stopSignal;
     atomic_bool runStatus;
     vector<Target> targets; // targets needs lock to prevent read operation when written
     MultiTargetDetector &detector;
     ClassIndependentTracker &tracker;
+
+    /**
+     * @brief Get the newest image from the video stream,
+     * and update currentImage.
+     * @return The updated image.
+     */
     Mat getUpdatedImage();
 };
 
