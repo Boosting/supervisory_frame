@@ -17,16 +17,16 @@ link_directories(${CAFFE_PATH}/build/lib)
 link_directories(${CUDA_PATH}/lib)
 link_directories(${CUDA_PATH}/lib64)
 
+aux_source_directory(opencv2 OPENCV_TRACKING_SOURCE_FILES)
+
 set(SOURCE_FILES
-#    include/class_independent_tracker.hpp
-#    include/multi_target_detector.hpp
-#    include/real_time_monitor.hpp
 		src/real_time_monitor.cpp
         src/tracker/kcf_tracker.cpp
         src/class_independent_tracker.cpp
         src/detector/faster_rcnn_detector.cpp
         src/multi_target_detector.cpp
-		src/target.cpp)
+		src/target.cpp
+        ${OPENCV_TRACKING_SOURCE_FILES})
 
 add_executable(real_time_monitor ${SOURCE_FILES})
 #add_executable(multi_target_detector src/multi_target_detector.cpp src/target.cpp)

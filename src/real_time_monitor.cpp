@@ -1,9 +1,10 @@
 //
 // Created by dujiajun on 1/13/17.
 //
-#include<iostream>
 #include "real_time_monitor.hpp"
 #include "detector/faster_rcnn_detector.hpp"
+#include "tracker/kcf_tracker.hpp"
+#include<iostream>
 using namespace std;
 
 RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t):address(a), detector(d), tracker(t), runStatus(false) {}
@@ -80,7 +81,7 @@ int main(){
     string model_file="/home/dujiajun/py-faster-rcnn/models/kitti/VGG16/faster_rcnn_end2end/test.prototxt";
     string trained_file="/home/dujiajun/py-faster-rcnn/data/kitti/VGG16/faster_rcnn_end2end.caffemodel";
     FasterRcnnDetector detector(model_file, trained_file);
-    ClassIndependentTracker tracker;
+    KcfTracker tracker;
     RealTimeMonitor monitor(address, detector, tracker);
     monitor.run();
     while (monitor.isRunning())
