@@ -3,6 +3,7 @@
 //
 #include<iostream>
 #include "real_time_monitor.hpp"
+#include "detector/faster_rcnn_detector.hpp"
 using namespace std;
 
 RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector d, ClassIndependentTracker t):address(a), detector(d), tracker(t), runStatus(false) {}
@@ -78,7 +79,7 @@ int main(){
     string address="/home/dujiajun/car_person_video.mp4";
     string model_file="/home/dujiajun/py-faster-rcnn/models/kitti/VGG16/faster_rcnn_end2end/test.prototxt";
     string trained_file="/home/dujiajun/py-faster-rcnn/data/kitti/VGG16/faster_rcnn_end2end.caffemodel";
-    MultiTargetDetector detector(model_file, trained_file);
+    FasterRcnnDetector detector(model_file, trained_file);
     ClassIndependentTracker tracker;
     RealTimeMonitor monitor(address, detector, tracker);
     monitor.run();
@@ -89,7 +90,7 @@ int main(){
         vector<Target> targets = monitor.getTargets();
         for(Target target: targets){
             Rect region = target.getRegion();
-			rectangle(frame, region, Scalar( 255, 0, 0 ), 2, 1);
+			rectangle(frame, region, Scalar( 255, 0, 0 ), 1, 1);
         }
         imshow("monitor", frame);
         this_thread::sleep_for(chrono::milliseconds(20));

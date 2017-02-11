@@ -23,9 +23,9 @@ set(SOURCE_FILES
 #    include/real_time_monitor.hpp
 		src/real_time_monitor.cpp
         src/class_independent_tracker.cpp
+        src/detector/faster_rcnn_detector.cpp
         src/multi_target_detector.cpp
-		src/target.cpp
- )
+		src/target.cpp)
 
 add_executable(real_time_monitor ${SOURCE_FILES})
 #add_executable(multi_target_detector src/multi_target_detector.cpp src/target.cpp)

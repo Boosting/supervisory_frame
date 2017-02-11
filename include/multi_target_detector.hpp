@@ -5,22 +5,15 @@
 #ifndef SUPERVISORY_FRAME_MULTI_TARGET_DETECTOR_HPP
 #define SUPERVISORY_FRAME_MULTI_TARGET_DETECTOR_HPP
 #include "target.hpp"
-#include <caffe/caffe.hpp>
-using namespace caffe;
 
 class MultiTargetDetector{
 public:
-    MultiTargetDetector(const string& model_file, const string& trained_file, bool useGPU = true);
-    vector<Target> detectTargets(const Mat& image);
-
-private:
-    boost::shared_ptr<Net<float> > net;
+    MultiTargetDetector();
+    virtual vector<Target> detectTargets(const Mat& image) = 0;
+protected:
     int roi_num = 0;
     int cls_num = 4; // include __background__
-    //vector<Target> label_vec;
-    Blob<float>* createImageBlob(const Mat& image);
-    Blob<float>* createImInfoBlob(const Mat& image);
-    vector<vector<float> > getOutputData(string blob_name);
+    vector<Target::TARGET_CLASS> idToClass;
     vector<vector<vector<int> > > bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred);
     vector<vector<int> > nms(const vector<vector<vector<int> > > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.7, float min_trust_score = 0.1);
 };
