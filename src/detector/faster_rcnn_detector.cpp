@@ -5,7 +5,7 @@
 FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& trained_file, bool useGPU):MultiTargetDetector() {
     if (useGPU) {
         Caffe::set_mode(Caffe::GPU);
-        Caffe::SetDevice(0); //may implement detecting gpu id automatically later
+        Caffe::SetDevice(2); //may implement detecting gpu id automatically later
     } else Caffe::set_mode(Caffe::CPU);
 
     /* Load the network. */

@@ -17,7 +17,7 @@ link_directories(${CAFFE_PATH}/build/lib)
 link_directories(${CUDA_PATH}/lib)
 link_directories(${CUDA_PATH}/lib64)
 
-aux_source_directory(opencv2 OPENCV_TRACKING_SOURCE_FILES)
+aux_source_directory(src/opencv2 OPENCV_TRACKING_SOURCE_FILES)
 
 set(SOURCE_FILES
 		src/real_time_monitor.cpp
