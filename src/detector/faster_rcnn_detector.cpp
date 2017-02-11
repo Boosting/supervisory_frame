@@ -2,7 +2,7 @@
 // Created by dujiajun on 2/10/17.
 //
 #include "detector/faster_rcnn_detector.hpp"
-FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& trained_file, bool useGPU = true):MultiTargetDetector() {
+FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& trained_file, bool useGPU):MultiTargetDetector() {
     if (useGPU) {
         Caffe::set_mode(Caffe::GPU);
         Caffe::SetDevice(0); //may implement detecting gpu id automatically later
@@ -42,7 +42,7 @@ vector<Target> FasterRcnnDetector::detectTargets(const Mat& image) {
 //printVec(rois);
 //printVec(cls_prob);
 //printVec(bbox_pred);
-    vector<vector<vector<int> > > bbox = bbox_transform(rois, bbox_pred);
+    vector<vector<vector<int> > > bbox = this->bbox_transform(rois, bbox_pred);
 
     vector<vector<int> > bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
     for(int i=0;i<bbox_cls.size();i++){

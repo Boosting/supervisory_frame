@@ -5,6 +5,8 @@
 #ifndef SUPERVISORY_FRAME_MULTI_TARGET_DETECTOR_HPP
 #define SUPERVISORY_FRAME_MULTI_TARGET_DETECTOR_HPP
 #include "target.hpp"
+#include <vector>
+using namespace std;
 
 class MultiTargetDetector{
 public:
