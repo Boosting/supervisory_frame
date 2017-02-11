@@ -69,17 +69,23 @@ public:
     void track();
 
     /**
-     * Get the stop signal.
+     * @brief Get the stop signal.
      * @return Bool, the stop signal.
      */
     bool getStopSignal();
 
     /**
-     * Set the stop signal.
+     * @brief Set the stop signal.
      * @param s The stop signal.
      */
     void setStopSignal(bool s);
 
+    /**
+     * @brief Set the running status.
+     * Attention: Don't use this function randomly!!!
+     * If not use properly, it might cause error.
+     * @param r Bool, the running status.
+     */
     void setRunStatus(bool r);
 
 private:
