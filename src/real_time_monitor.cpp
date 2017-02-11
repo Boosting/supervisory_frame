@@ -34,9 +34,8 @@ void RealTimeMonitor::run(){ // two threads call run() at the same time may caus
 }
 
 void RealTimeMonitor::stop(){
-    if(runStatus) {
-        stopSignal = true;
-    }
+    if(!runStatus) return;
+    stopSignal = true;
 }
 
 Mat RealTimeMonitor::getCurrentImage(){
