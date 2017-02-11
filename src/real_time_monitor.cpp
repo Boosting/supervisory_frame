@@ -6,7 +6,7 @@
 #include "detector/faster_rcnn_detector.hpp"
 using namespace std;
 
-RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector d, ClassIndependentTracker t):address(a), detector(d), tracker(t), runStatus(false) {}
+RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t):address(a), detector(d), tracker(t), runStatus(false) {}
 
 void loop(RealTimeMonitor *monitor){
     int cnt=0;

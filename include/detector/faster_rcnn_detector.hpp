@@ -15,7 +15,7 @@ using namespace std;
 
 class FasterRcnnDetector: public MultiTargetDetector {
 public:
-    FasterRcnnDetector(const string& model_file, const string& trained_file, bool useGPU = true):MultiTargetDetector();
+    FasterRcnnDetector(const string& model_file, const string& trained_file, bool useGPU = true);
     vector<Target> detectTargets(const Mat& image);
 protected:
     Blob<float>* createImageBlob(const Mat& image);

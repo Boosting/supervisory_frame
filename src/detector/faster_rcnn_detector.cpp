@@ -2,7 +2,7 @@
 // Created by dujiajun on 2/10/17.
 //
 #include "detector/faster_rcnn_detector.hpp"
-FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& trained_file, bool useGPU = true) {
+FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& trained_file, bool useGPU = true):MultiTargetDetector() {
     if (useGPU) {
         Caffe::set_mode(Caffe::GPU);
         Caffe::SetDevice(0); //may implement detecting gpu id automatically later

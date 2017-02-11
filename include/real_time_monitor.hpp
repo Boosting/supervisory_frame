@@ -19,7 +19,7 @@ using namespace std;
 using namespace cv;
 class RealTimeMonitor {
 public:
-    RealTimeMonitor(string a, MultiTargetDetector d, ClassIndependentTracker t);
+    RealTimeMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t);
     bool isRunning() const;
     void run();
     void stop();
@@ -35,8 +35,8 @@ private:
     mutable boost::shared_mutex image_mutex;
     atomic_bool runStatus;
     vector<Target> targets; // targets needs lock to prevent read operation when written
-    MultiTargetDetector detector;
-    ClassIndependentTracker tracker;
+    MultiTargetDetector &detector;
+    ClassIndependentTracker &tracker;
     Mat getUpdatedImage();
 };
 
