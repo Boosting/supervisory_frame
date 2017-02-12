@@ -16,6 +16,12 @@ public:
      * @param t The tracker.
      */
     RotationMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t);
+
+    /**
+     * @brief Implement the detecting and tracking update targets' regions method.
+     */
+    void detectTrackLoop();
+
 protected:
     /**
      * @brief Perform a round of detecting from the current image.
