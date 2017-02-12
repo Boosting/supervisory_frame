@@ -29,7 +29,7 @@ void RealTimeMonitor::run(){ // two threads call run() at the same time may caus
     if(runStatus) return;
     runStatus = true; stopSignal = false;
     if(!cap.isOpened()) cap.open(address);
-    thread loopThread(loop, this);
+    thread loopThread(&RealTimeMonitor::loop, this);
     loopThread.detach();
 }
 

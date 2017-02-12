@@ -5,7 +5,7 @@
 #ifndef VIDEOSTREAM_REAL_TIME_MONITOR_HPP
 #define VIDEOSTREAM_REAL_TIME_MONITOR_HPP
 
-#include <opencv2/cv.hpp>
+#include <opencv/cv.hpp>
 #include <boost/thread/locks.hpp>
 #include <boost/thread/shared_mutex.hpp>
 #include<mutex>

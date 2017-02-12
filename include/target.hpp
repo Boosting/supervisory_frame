@@ -4,7 +4,7 @@
 
 #ifndef SUPERVISORY_FRAME_TARGET_HPP
 #define SUPERVISORY_FRAME_TARGET_HPP
-#include <opencv2/cv.hpp>
+#include <opencv/cv.hpp>
 using namespace cv;
 
 /**
