@@ -68,26 +68,6 @@ public:
      */
     void track();
 
-    /**
-     * @brief Get the stop signal.
-     * @return Bool, the stop signal.
-     */
-    bool getStopSignal();
-
-    /**
-     * @brief Set the stop signal.
-     * @param s The stop signal.
-     */
-    void setStopSignal(bool s);
-
-    /**
-     * @brief Set the running status.
-     * Attention: Don't use this function randomly!!!
-     * If not use properly, it might cause error.
-     * @param r Bool, the running status.
-     */
-    void setRunStatus(bool r);
-
 private:
     VideoCapture cap;
     string address;
@@ -105,6 +85,11 @@ private:
      * @return The updated image.
      */
     Mat getUpdatedImage();
+
+    /**
+     * @brief Perform the detecting and tracking loop.
+     */
+    void loop();
 };
 
 

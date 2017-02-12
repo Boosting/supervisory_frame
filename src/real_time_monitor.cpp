@@ -10,17 +10,17 @@ using namespace std;
 RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t)
         :address(a), detector(d), tracker(t), runStatus(false), stopSignal(false) {}
 
-void loop(RealTimeMonitor *monitor){
+void RealTimeMonitor::loop(){
     int cnt=0;
-    while(!monitor->getStopSignal()) {
-        if(cnt==0) monitor->detect();
-        else monitor->track();
+    while(!stopSignal) {
+        if(cnt==0) detect();
+        else track();
         this_thread::sleep_for(chrono::milliseconds(10));
         cnt++;
         if(cnt==20) cnt=0;
     }
-    monitor->setRunStatus(false);
-    monitor->setStopSignal(false);
+    runStatus = false;
+    stopSignal = false;
 }
 bool RealTimeMonitor::isRunning() const {
     return runStatus;
@@ -70,18 +70,6 @@ void RealTimeMonitor::track(){
         t.setImage(curImage);
         t.setRegion(tracker.getUpdateRegion(preImage, curImage, preRegion));
     }
-}
-
-bool RealTimeMonitor::getStopSignal(){
-    return stopSignal;
-}
-
-void RealTimeMonitor::setStopSignal(bool s){
-    stopSignal = s;
-}
-
-void RealTimeMonitor::setRunStatus(bool r){
-    runStatus = r;
 }
 
 int main(){
