@@ -58,16 +58,6 @@ public:
      */
     vector<Target> getTargets();
 
-    /**
-     * @brief Perform a round of detecting from the current image.
-     */
-    void detect();
-
-    /**
-     * @brief Perform a round of tracking for the detected targets.
-     */
-    void track();
-
 private:
     VideoCapture cap;
     string address;
@@ -90,6 +80,16 @@ private:
      * @brief Perform the detecting and tracking loop.
      */
     void loop();
+
+    /**
+     * @brief Perform a round of detecting from the current image.
+     */
+    void detect();
+
+    /**
+     * @brief Perform a round of tracking for the detected targets.
+     */
+    void track();
 };
 
 
