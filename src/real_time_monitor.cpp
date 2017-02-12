@@ -54,7 +54,8 @@ vector<Target> RealTimeMonitor::getTargets(){
     return targets;
 }
 void RealTimeMonitor::detect(){
-    Mat curImage = getUpdatedImage();
+    cout<<"detecting ..."<<endl<<endl<<endl;
+	Mat curImage = getUpdatedImage();
     if(!curImage.empty()) {
         targets = detector.detectTargets(curImage);
         for (Target t: targets) {
@@ -63,6 +64,7 @@ void RealTimeMonitor::detect(){
     }
 }
 void RealTimeMonitor::track(){
+	cout<<"tracking ..."<<endl<<endl<<endl;
     for(Target &t: targets){
         Mat preImage = t.getImage(), curImage = getUpdatedImage();
         if(curImage.empty()) continue;
