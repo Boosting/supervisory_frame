@@ -58,7 +58,7 @@ public:
      */
     vector<Target> getTargets();
 
-private:
+protected:
     VideoCapture cap;
     string address;
     Mat currentImage;
@@ -82,14 +82,10 @@ private:
     void loop();
 
     /**
-     * @brief Perform a round of detecting from the current image.
+     * @brief Implement the detecting and tracking update targets' regions method in the subclass.
      */
-    void detect();
+    virtual void detectTrackLoop() = 0;
 
-    /**
-     * @brief Perform a round of tracking for the detected targets.
-     */
-    void track();
 };
 
 

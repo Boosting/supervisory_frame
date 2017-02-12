@@ -2,8 +2,6 @@
 // Created by dujiajun on 1/13/17.
 //
 #include "real_time_monitor.hpp"
-#include "detector/faster_rcnn_detector.hpp"
-#include "tracker/kcf_tracker.hpp"
 #include<iostream>
 using namespace std;
 
@@ -11,16 +9,11 @@ RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector &d, ClassIndepend
         :address(a), detector(d), tracker(t), runStatus(false), stopSignal(false) {}
 
 void RealTimeMonitor::loop(){
-    int cnt=0;
-    while(!stopSignal) {
-        if(cnt==0) detect();
-        else track();
-        this_thread::sleep_for(chrono::milliseconds(10));
-        cnt++;
-        if(cnt==20) cnt=0;
-    }
+    cout<<"start detect and track loop"<<endl;
+    detectTrackLoop();
     runStatus = false;
     stopSignal = false;
+    cout<<"end detect and track loop"<<endl;
 }
 bool RealTimeMonitor::isRunning() const {
     return runStatus;
@@ -50,48 +43,7 @@ Mat RealTimeMonitor::getUpdatedImage() {
     }
     return currentImage;
 }
+
 vector<Target> RealTimeMonitor::getTargets(){
     return targets;
-}
-void RealTimeMonitor::detect(){
-    cout<<"detecting ..."<<endl<<endl<<endl;
-	Mat curImage = getUpdatedImage();
-    if(!curImage.empty()) {
-        targets = detector.detectTargets(curImage);
-        for (Target t: targets) {
-            t.setImage(curImage);
-        }
-    }
-}
-void RealTimeMonitor::track(){
-	cout<<"tracking ..."<<endl<<endl<<endl;
-    for(Target &t: targets){
-        Mat preImage = t.getImage(), curImage = getUpdatedImage();
-        if(curImage.empty()) continue;
-        Rect preRegion = t.getRegion();
-        t.setImage(curImage);
-        t.setRegion(tracker.getUpdateRegion(preImage, curImage, preRegion));
-    }
-}
-
-int main(){
-    string address="/home/dujiajun/car_person_video.mp4";
-    string model_file="/home/dujiajun/py-faster-rcnn/models/kitti/VGG16/faster_rcnn_end2end/test.prototxt";
-    string trained_file="/home/dujiajun/py-faster-rcnn/data/kitti/VGG16/faster_rcnn_end2end.caffemodel";
-    FasterRcnnDetector detector(model_file, trained_file);
-    KcfTracker tracker;
-    RealTimeMonitor monitor(address, detector, tracker);
-    monitor.run();
-    while (monitor.isRunning())
-    {
-        Mat frame = monitor.getCurrentImage();
-        if(frame.empty()) continue;
-        vector<Target> targets = monitor.getTargets();
-        for(Target target: targets){
-            Rect region = target.getRegion();
-			rectangle(frame, region, Scalar( 255, 0, 0 ), 1, 1);
-        }
-        imshow("monitor", frame);
-        this_thread::sleep_for(chrono::milliseconds(20));
-    }
 }

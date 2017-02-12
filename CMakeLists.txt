@@ -20,6 +20,8 @@ link_directories(${CUDA_PATH}/lib64)
 aux_source_directory(src/opencv2 OPENCV_TRACKING_SOURCE_FILES)
 
 set(SOURCE_FILES
+        src/test_rotation_monitor.cpp
+        src/monitor/rotation_monitor.cpp
 		src/real_time_monitor.cpp
         src/tracker/kcf_tracker.cpp
         src/class_independent_tracker.cpp
@@ -28,7 +30,7 @@ set(SOURCE_FILES
 		src/target.cpp
         ${OPENCV_TRACKING_SOURCE_FILES})
 
-add_executable(real_time_monitor ${SOURCE_FILES})
+add_executable(test_rotation_monitor ${SOURCE_FILES})
 #add_executable(multi_target_detector src/multi_target_detector.cpp src/target.cpp)
 
 # attention:
