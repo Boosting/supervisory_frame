@@ -44,24 +44,7 @@ vector<Target> FasterRcnnDetector::detectTargets(const Mat& image) {
     vector<vector<vector<int> > > bbox = this->bbox_transform(rois, bbox_pred);
 
     vector<vector<int> > bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
-    for(int i=0;i<bbox_cls.size();i++){
-        cout<<"x1: "<<bbox_cls[i][0]<<" y1: "<<bbox_cls[i][1]<<" x2: "<<bbox_cls[i][2]<<" y2: "<<bbox_cls[i][3]<<endl;
-        cout<<"cls: "<<bbox_cls[i][4]<<endl;
-    }
-
-    //translate cls to Target
-    int target_num = bbox_cls.size();
-    vector<Target> target_vec(target_num);
-    for(int i=0;i<target_num;i++){
-        Target &target = target_vec[i];
-        vector<int> &vec=bbox_cls[i];
-        int class_id = vec[4];
-        Target::TARGET_CLASS target_class = (class_id >= 0 && class_id < 4) ? idToClass[class_id] : Target::UNKNOWN;
-        target.setClass(target_class);
-        int x1=vec[0], y1=vec[1], x2=vec[2], y2=vec[3];
-        target.setRegion({x1, y1, x2-x1+1, y2-y1+1});
-    }
-
+    vector<Target> target_vec = bboxToTarget(bbox_cls);
     return target_vec;
 }
 

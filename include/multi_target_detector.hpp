@@ -34,6 +34,14 @@ protected:
 
     vector<vector<vector<int> > > bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred);
     vector<vector<int> > nms(const vector<vector<vector<int> > > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.7, float min_trust_score = 0.1);
+
+    /**
+     * @brief Transform bbox class vector to Target vector
+     * @param bbox_cls Vector of bbox and class,
+     * each item is vector of size 5: x1, y1, x2, y2, class id.
+     * @return Vector of Target.
+     */
+    vector<Target> bboxToTarget(vector<vector<int> > bbox_cls);
 };
 
 #endif //SUPERVISORY_FRAME_MULTI_TARGET_DETECTOR_HPP

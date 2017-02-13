@@ -88,15 +88,25 @@ vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > 
     return bbox_cls;
 }
 
-//int main()
-//{
-//    string model_file="/home/dujiajun/py-faster-rcnn/models/kitti/VGG16/faster_rcnn_end2end/test.prototxt";
-//    string trained_file="/home/dujiajun/py-faster-rcnn/data/kitti/VGG16/faster_rcnn_end2end.caffemodel";
-//    string image_file="/home/dujiajun/kitti/testing/image_2/000456.png";
-//    MultiTargetDetector detector(model_file, trained_file);
-//    Mat image;
-//    image=cv::imread(image_file);
-//    cout<<"height: "<<image.rows<<" width: "<<image.cols<<endl;
-//    detector.detectTargets(image);
-//    return 0;
-//}
+
+vector<Target> MultiTargetDetector::bboxToTarget(vector<vector<int> > bbox_cls) {
+    for(int i=0;i<bbox_cls.size();i++){
+        cout<<"x1: "<<bbox_cls[i][0]<<" y1: "<<bbox_cls[i][1]<<" x2: "<<bbox_cls[i][2]<<" y2: "<<bbox_cls[i][3]<<endl;
+        cout<<"cls: "<<bbox_cls[i][4]<<endl;
+    }
+
+    //translate cls to Target
+    int target_num = bbox_cls.size();
+    vector<Target> target_vec(target_num);
+    for(int i=0;i<target_num;i++){
+        Target &target = target_vec[i];
+        vector<int> &vec=bbox_cls[i];
+        int class_id = vec[4];
+        Target::TARGET_CLASS target_class = (class_id >= 0 && class_id < 4) ? idToClass[class_id] : Target::UNKNOWN;
+        target.setClass(target_class);
+        int x1=vec[0], y1=vec[1], x2=vec[2], y2=vec[3];
+        target.setRegion({x1, y1, x2-x1+1, y2-y1+1});
+    }
+
+    return target_vec;
+}
