@@ -3,7 +3,7 @@
 //
 
 #include "detector/yolo_detector.hpp"
-#include "kitti_detection.h"
+#include "kitti_detection.hpp"
 
 YoloDetector::YoloDetector(bool useGPU) {
     darknet_network = get_network();
