@@ -3,10 +3,12 @@
 //
 
 #include "detector/yolo_detector.hpp"
+extern "C" {
 #include "region_layer.h"
 #include "parser.h"
 #include "box.h"
 #include "utils.h"
+}
 
 YoloDetector::YoloDetector(bool useGPU) {
     char *cfgfile = "/home/dujiajun/darknet/cfg/yolo-kitti.cfg";

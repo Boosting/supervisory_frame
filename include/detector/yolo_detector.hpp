@@ -6,8 +6,10 @@
 #define SUPERVISORY_FRAME_YOLO_DETECTOR_HPP
 
 #include "multi_target_detector.hpp"
+extern "C" {
 #include "image.h"
 #include "network.h"
+}
 
 class YoloDetector: public MultiTargetDetector {
 public:
