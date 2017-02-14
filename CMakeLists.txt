@@ -51,4 +51,4 @@ TARGET_LINK_LIBRARIES(test_rotation_monitor ${OpenCV_LIBS})
     target_link_libraries(test_rotation_monitor ${CMAKE_THREAD_LIBS_INIT})
  endif()
 
-target_link_libraries(test_rotation_monitor -lcudart -lcublas -lcurand -lglog -lgflags -lprotobuf -lleveldb -lsnappy -llmdb -lboost_system -lhdf5_hl -lhdf5 -lm -lopencv_core -lopencv_highgui -lopencv_imgproc -lboost_thread -lstdc++ -lcblas -latlas -lcaffe -ldarknet)
+target_link_libraries(test_rotation_monitor -ldarknet -lcudart -lcublas -lcurand -lglog -lgflags -lprotobuf -lleveldb -lsnappy -llmdb -lboost_system -lhdf5_hl -lhdf5 -lm -lopencv_core -lopencv_highgui -lopencv_imgproc -lboost_thread -lstdc++ -lcblas -latlas -lcaffe)
