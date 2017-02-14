@@ -15,21 +15,21 @@ YoloDetector::YoloDetector(bool useGPU) {
     load_weights(&darknet_network, weightfile);
 }
 
-vector<Target> YoloDetector::detectTargets(const Mat& image) {
-    image im = createImage(image);
+vector<Target> YoloDetector::detectTargets(const Mat& mat_image) {
+    image im = createImage(mat_image);
     vector<vector<int> > bbox_cls = kitti_detect(im, darknet_network);
     vector<Target> targets = bboxToTarget(bbox_cls);
     return targets;
 }
 
-image YoloDetector::createImage(const Mat& image) {
+image YoloDetector::createImage(const Mat& mat_image) {
     image im;
-    int height = image.rows, width = image.cols, channels = 3;
+    int height = mat_image.rows, width = mat_image.cols, channels = 3;
     im.h = height, im.w = width, im.c = channels;
     im.data = new float[height * width * channels];
     for(int j=0;j<height;j++)
     {
-        const uchar *mat_data = image.ptr<uchar>(j);
+        const uchar *mat_data = mat_image.ptr<uchar>(j);
         for(int i=0;i<width;i++){
             for(int k=0;k<channels;k++){
                 int dst_index = i + width * (j + height * k);
@@ -67,9 +67,9 @@ vector<vector<int> > YoloDetector::get_detections(image &im, int num, float thre
 vector<vector<int> > YoloDetector::kitti_detect(const image &im, const network &net){
     float thresh = 0.005, nms = 0.45, hier_thresh = 0.5;
     int width = net.w, height = net.h;
-    int output_num = l.w*l.h*l.n;
-    image image_resized = resize_image(im, net.w, net.h);
     layer l = net.layers[net.n-1];
+	int output_num = l.w*l.h*l.n;
+    image image_resized = resize_image(im, net.w, net.h);
     box *boxes = new box[output_num];
     float **probs = new float*[output_num];
     for(int j = 0; j < output_num; ++j) {
@@ -83,7 +83,7 @@ vector<vector<int> > YoloDetector::kitti_detect(const image &im, const network &
 
     vector<vector<int> > bbox_cls= get_detections(image_resized, output_num, thresh, boxes, probs, l.classes);
 
-    delete [] box;
+    delete [] boxes;
     for(int j = 0; j < output_num; ++j) {
         delete [] probs[j];
     }

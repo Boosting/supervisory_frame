@@ -3,7 +3,7 @@
 //
 
 
-#include "detector/faster_rcnn_detector.hpp"
+#include "detector/yolo_detector.hpp"
 #include "tracker/kcf_tracker.hpp"
 #include "monitor/rotation_monitor.hpp"
 
@@ -11,7 +11,7 @@ int main(){
     string address="/home/dujiajun/car_person_video.mp4";
     string model_file="/home/dujiajun/py-faster-rcnn/models/kitti/VGG16/faster_rcnn_end2end/test.prototxt";
     string trained_file="/home/dujiajun/py-faster-rcnn/data/kitti/VGG16/faster_rcnn_end2end.caffemodel";
-    FasterRcnnDetector detector(model_file, trained_file);
+    YoloDetector detector;
     KcfTracker tracker;
     RotationMonitor monitor(address, detector, tracker);
     monitor.run();
