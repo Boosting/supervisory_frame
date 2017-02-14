@@ -16,5 +16,7 @@ public:
 protected:
     network darknet_network;
     image createImage(const Mat& image);
+    vector<vector<int> > get_detections(image &im, int num, float thresh, box *boxes, float **probs, int classes);
+    vector<vector<int> > kitti_detect(const image &im, const network &net);
 };
 #endif //SUPERVISORY_FRAME_YOLO_DETECTOR_HPP
