@@ -1,7 +1,7 @@
 //
 // Created by dujiajun on 2/2/17.
 //
-#include <caffe/caffe.hpp>
+//#include <caffe/caffe.hpp>
 #include <opencv2/opencv.hpp>
 #include <iosfwd>
 #include <memory>
@@ -13,7 +13,7 @@
 #include <ctime>
 #include <iostream>
 #include "multi_target_detector.hpp"
-using namespace caffe;
+//using namespace caffe;
 using namespace std;
 
 MultiTargetDetector::MultiTargetDetector() {

@@ -1,18 +1,26 @@
 //
 // Created by dujiajun on 2/13/17.
 //
+#define GPU //use in darknet
 
 #include "detector/yolo_detector.hpp"
+
+#undef __cplusplus
 extern "C" {
 #include "region_layer.h"
 #include "parser.h"
 #include "box.h"
 #include "utils.h"
+#include "cuda_renamed.h"
 }
+#define __cplusplus 201103L
+
+#undef GPU
 
 YoloDetector::YoloDetector(bool useGPU) {
     char *cfgfile = "/home/dujiajun/darknet/cfg/yolo-kitti.cfg";
     char *weightfile = "/home/dujiajun/darknet/yolo-kitti_final.weights";
+    cuda_set_device(0);
     darknet_network = parse_network_cfg(cfgfile);
     load_weights(&darknet_network, weightfile);
 }

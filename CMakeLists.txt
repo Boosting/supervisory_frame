@@ -5,17 +5,17 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_compile_options(-std=c++11)
 
-set(CAFFE_PATH /home/dujiajun/py-faster-rcnn/caffe-fast-rcnn)
+#set(CAFFE_PATH /home/dujiajun/py-faster-rcnn/caffe-fast-rcnn)
 set(CUDA_PATH /usr/local/cuda)
 set(DARKNET_PATH /home/dujiajun/darknet)
 
 include_directories(include)
-include_directories(${CAFFE_PATH}/include ${CAFFE_PATH}/build/src)
+#include_directories(${CAFFE_PATH}/include ${CAFFE_PATH}/build/src)
 include_directories(${CUDA_PATH}/include)
 include_directories(${DARKNET_PATH}/src)
 
 link_directories(/usr/local/lib)
-link_directories(${CAFFE_PATH}/build/lib)
+#link_directories(${CAFFE_PATH}/build/lib)
 link_directories(${CUDA_PATH}/lib)
 link_directories(${CUDA_PATH}/lib64)
 link_directories(${DARKNET_PATH})
@@ -51,4 +51,5 @@ TARGET_LINK_LIBRARIES(test_rotation_monitor ${OpenCV_LIBS})
     target_link_libraries(test_rotation_monitor ${CMAKE_THREAD_LIBS_INIT})
  endif()
 
-target_link_libraries(test_rotation_monitor -ldarknet -lcudart -lcublas -lcurand -lglog -lgflags -lprotobuf -lleveldb -lsnappy -llmdb -lboost_system -lhdf5_hl -lhdf5 -lm -lopencv_core -lopencv_highgui -lopencv_imgproc -lboost_thread -lstdc++ -lcblas -latlas -lcaffe)
+#target_link_libraries(test_rotation_monitor -ldarknet -lcudart -lcublas -lcurand -lglog -lgflags -lprotobuf -lleveldb -lsnappy -llmdb -lboost_system -lhdf5_hl -lhdf5 -lm -lopencv_core -lopencv_highgui -lopencv_imgproc -lboost_thread -lstdc++ -lcblas -latlas -lcaffe)
+target_link_libraries(test_rotation_monitor -ldarknet -lcudart -lcublas -lcurand -lglog -lgflags -lprotobuf -lleveldb -lsnappy -llmdb -lboost_system -lhdf5_hl -lhdf5 -lm -lopencv_core -lopencv_highgui -lopencv_imgproc -lboost_thread -lstdc++ -lcblas -latlas)
