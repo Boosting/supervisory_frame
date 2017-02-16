@@ -51,7 +51,7 @@ image YoloDetector::createImage(const Mat& mat_image) {
     return im;
 }
 
-vector<vector<int> > YoloDetector::get_detections(image &im, int num, float thresh, box *boxes, float **probs, int classes) {
+vector<vector<int> > YoloDetector::get_detections(const image &im, int num, float thresh, box *boxes, float **probs, int classes) {
     vector<vector<int> > bbox_cls(0, vector<int>(5));
     for(int i = 0; i < num; ++i){
         int class_id = max_index(probs[i], classes);
@@ -68,14 +68,14 @@ vector<vector<int> > YoloDetector::get_detections(image &im, int num, float thre
         if(y1 < 0) y1 = 0;
         if(y2 > im.h-1) y2 = im.h-1;
         vector<int> item(5);
-        item[0]=x1, item[1]=y1, item[2]=x2, item[3]=y2, item[4]=class_id;
+        item[0]=x1, item[1]=y1, item[2]=x2, item[3]=y2, item[4]=class_id+1;
         bbox_cls.push_back(item);
     }
     return bbox_cls;
 }
 
 vector<vector<int> > YoloDetector::kitti_detect(const image &im, const network &net){
-    float thresh = 0.005, nms = 0.45, hier_thresh = 0.5;
+    float thresh = 0.24, nms = 0.4, hier_thresh = 0.5;
     int width = net.w, height = net.h;
     layer l = net.layers[net.n-1];
 	int output_num = l.w*l.h*l.n;
@@ -91,7 +91,7 @@ vector<vector<int> > YoloDetector::kitti_detect(const image &im, const network &
     if (l.softmax_tree && nms) do_nms_obj(boxes, probs, output_num, l.classes, nms);
     else if (nms) do_nms_sort(boxes, probs, output_num, l.classes, nms);
 
-    vector<vector<int> > bbox_cls= get_detections(image_resized, output_num, thresh, boxes, probs, l.classes);
+    vector<vector<int> > bbox_cls= get_detections(im, output_num, thresh, boxes, probs, l.classes);
 
     delete [] boxes;
     for(int j = 0; j < output_num; ++j) {
