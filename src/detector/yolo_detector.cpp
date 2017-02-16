@@ -1,8 +1,6 @@
 //
 // Created by dujiajun on 2/13/17.
 //
-#define GPU //use in darknet
-
 #include "detector/yolo_detector.hpp"
 
 #undef __cplusplus
@@ -15,14 +13,13 @@ extern "C" {
 }
 #define __cplusplus 201103L
 
-#undef GPU
-
 YoloDetector::YoloDetector(bool useGPU) {
-    char *cfgfile = "/home/dujiajun/darknet/cfg/yolo-kitti.cfg";
-    char *weightfile = "/home/dujiajun/darknet/yolo-kitti_final.weights";
-    cuda_set_device(0);
+    char cfgfile[100] = "/home/dujiajun/darknet/cfg/yolo-kitti.cfg";
+    char weightfile[100] = "/home/dujiajun/darknet/yolo-kitti_final.weights";
+    gpu_index = 0;
     darknet_network = parse_network_cfg(cfgfile);
     load_weights(&darknet_network, weightfile);
+	set_batch_network(&darknet_network, 1);
 }
 
 vector<Target> YoloDetector::detectTargets(const Mat& mat_image) {
@@ -85,10 +82,9 @@ vector<vector<int> > YoloDetector::kitti_detect(const image &im, const network &
     for(int j = 0; j < output_num; ++j) {
         probs[j] = new float[l.classes + 1];
     }
-
     network_predict(net, image_resized.data);
-    get_region_boxes(l, 1, 1, thresh, probs, boxes, 0, 0, hier_thresh);
-    if (l.softmax_tree && nms) do_nms_obj(boxes, probs, output_num, l.classes, nms);
+	get_region_boxes(l, 1, 1, thresh, probs, boxes, 0, 0, hier_thresh);
+ 	if (l.softmax_tree && nms) do_nms_obj(boxes, probs, output_num, l.classes, nms);
     else if (nms) do_nms_sort(boxes, probs, output_num, l.classes, nms);
 
     vector<vector<int> > bbox_cls= get_detections(im, output_num, thresh, boxes, probs, l.classes);

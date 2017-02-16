@@ -5,6 +5,10 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_compile_options(-std=c++11)
 
+ADD_DEFINITIONS(-DGPU)
+ADD_DEFINITIONS(-DCUDNN)
+ADD_DEFINITIONS(-DDEBUG)
+
 #set(CAFFE_PATH /home/dujiajun/py-faster-rcnn/caffe-fast-rcnn)
 set(CUDA_PATH /usr/local/cuda)
 set(DARKNET_PATH /home/dujiajun/darknet)
@@ -54,5 +58,5 @@ TARGET_LINK_LIBRARIES(test_rotation_monitor ${OpenCV_LIBS})
 target_link_libraries(test_rotation_monitor -ldarknet)
 target_link_libraries(test_rotation_monitor -lopencv_core -lopencv_highgui -lopencv_imgproc)
 target_link_libraries(test_rotation_monitor -lboost_system -lboost_thread -lstdc++)
-target_link_libraries(test_rotation_monitor -lcudart -lcublas -lcurand)
+target_link_libraries(test_rotation_monitor -lcuda -lcudart -lcublas -lcurand -lcudnn)
 #target_link_libraries(test_rotation_monitor -lcaffe -lglog -lgflags -lprotobuf -lleveldb -lsnappy -llmdb -lhdf5_hl -lhdf5 -lm -lcblas -latlas)
