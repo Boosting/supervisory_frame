@@ -16,7 +16,11 @@ extern "C" {
 YoloDetector::YoloDetector(bool useGPU) {
     char cfgfile[100] = "/home/dujiajun/darknet/cfg/yolo-kitti.cfg";
     char weightfile[100] = "/home/dujiajun/darknet/yolo-kitti_final.weights";
+#ifdef GPU
     gpu_index = 0;
+#else
+	gpu_index = -1;
+#endif
     darknet_network = parse_network_cfg(cfgfile);
     load_weights(&darknet_network, weightfile);
 	set_batch_network(&darknet_network, 1);
