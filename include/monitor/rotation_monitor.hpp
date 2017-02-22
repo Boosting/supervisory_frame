@@ -33,6 +33,8 @@ protected:
      */
     map<unsigned long long, Target> track(const Mat curImage, const Mat preImage);
 
+    double getOverlapRate(Rect r1, Rect r2);
+
 };
 
 #endif //SUPERVISORY_FRAME_ROTATION_MONITOR_HPP
