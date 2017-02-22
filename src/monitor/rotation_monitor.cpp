@@ -85,7 +85,7 @@ map<unsigned long long, Target> RotationMonitor::detect(const Mat curImage){
             Target::TARGET_CLASS cls2 = t2.getClass();
             if(cls2!=cls1) continue;
             double overlapRate = getOverlapRate(r1, r2);
-            if(overlapRate>max(overlapThresh, maxOverlapRate, overlapVec[i])) {
+            if(overlapRate>max(overlapThresh, max(maxOverlapRate, overlapVec[i]))) {
                 indice = i;
                 maxOverlapRate = overlapRate;
                 overlapVec[i] = overlapRate;
