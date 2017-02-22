@@ -10,7 +10,10 @@ RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector &d, ClassIndepend
 
 void RealTimeMonitor::loop(){
     cout<<"start detect and track loop"<<endl;
-    detectTrackLoop();
+    while(!stopSignal) {
+        detectTrackLoop();
+        display();
+    }
     runStatus = false;
     stopSignal = false;
     cout<<"end detect and track loop"<<endl;
@@ -46,4 +49,14 @@ Mat RealTimeMonitor::getUpdatedImage() {
 
 vector<Target> RealTimeMonitor::getTargets(){
     return targets;
+}
+
+void RealTimeMonitor::display(){
+    Mat displayImage = currentImage.clone();
+    for(Target &target: targets){
+        Rect region = target.getRegion();
+        rectangle(displayImage, region, Scalar( 255, 0, 0 ), 1, 1);
+    }
+    imshow("monitor", displayImage);
+    this_thread::sleep_for(chrono::milliseconds(10));
 }

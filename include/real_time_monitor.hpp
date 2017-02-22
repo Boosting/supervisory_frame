@@ -86,6 +86,10 @@ protected:
      */
     virtual void detectTrackLoop() = 0;
 
+    /**
+     * @brief Display image annotated with targets' information.
+     */
+    void display();
 };
 
 
