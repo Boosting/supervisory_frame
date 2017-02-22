@@ -7,7 +7,7 @@
 RotationMonitor::RotationMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t)
     :RealTimeMonitor(a, d, t){}
 
-void RotationMonitor::detectTrack(Mat preImage, Mat curImage) {
+vector<Target> RotationMonitor::detectTrack(const Mat preImage, const Mat curImage) {
     map<unsigned long long, Target> detectMap = detect(curImage);
     map<unsigned long long, Target> trackMap = track(curImage, preImage);
     map<unsigned long long, Target> fusionMap;
@@ -39,8 +39,7 @@ void RotationMonitor::detectTrack(Mat preImage, Mat curImage) {
         updatedTargets[i] = target;
         i++;
     }
-    targets = updatedTargets;
-    this_thread::sleep_for(chrono::milliseconds(10));
+    return updatedTargets;
 }
 
 double RotationMonitor::getOverlapRate(Rect r1, Rect r2){

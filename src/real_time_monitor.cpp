@@ -13,7 +13,8 @@ void RealTimeMonitor::loop(){
     while(!stopSignal) {
         Mat preImage = getCurrentImage();
         Mat curImage = getUpdatedImage();
-        detectTrack(preImage, curImage);
+        vector<Target> targetVec = detectTrack(preImage, curImage);
+        setTargets(targetVec);
     }
     runStatus = false;
     stopSignal = false;
@@ -49,5 +50,11 @@ Mat RealTimeMonitor::getUpdatedImage() {
 }
 
 vector<Target> RealTimeMonitor::getTargets(){
+    boost::shared_lock<boost::shared_mutex> lock(targets_mutex);
     return targets;
+}
+
+void RealTimeMonitor::setTargets(vector<Target> targetVec){
+    boost::unique_lock<boost::shared_mutex> lock(targets_mutex);
+    targets = targetVec;
 }

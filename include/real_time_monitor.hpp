@@ -63,6 +63,7 @@ protected:
     string address;
     Mat currentImage;
     mutable boost::shared_mutex image_mutex;
+    mutable boost::shared_mutex targets_mutex;
     atomic_bool stopSignal;
     atomic_bool runStatus;
     vector<Target> targets; // targets needs lock to prevent read operation when written
@@ -84,7 +85,9 @@ protected:
     /**
      * @brief Implement the detecting and tracking update targets' regions method in the subclass.
      */
-    virtual void detectTrack(Mat preImage, Mat curImage) = 0;
+    virtual vector<Target> detectTrack(const Mat preImage, const Mat curImage) = 0;
+
+    void setTargets(vector<Target> targetVec);
 };
 
 

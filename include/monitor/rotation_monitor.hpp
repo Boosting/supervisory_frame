@@ -20,7 +20,7 @@ public:
     /**
      * @brief Perform a round of detecting and tracking.
      */
-    void detectTrack(Mat preImage, Mat curImage);
+    vector<Target> detectTrack(const Mat preImage, const Mat curImage);
 
 protected:
     /**
