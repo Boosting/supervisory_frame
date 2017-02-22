@@ -13,7 +13,8 @@ void RealTimeMonitor::loop(){
     while(!stopSignal) {
         Mat preImage = getCurrentImage();
         Mat curImage = getUpdatedImage();
-        vector<Target> targetVec = detectTrack(preImage, curImage);
+        vector<Target> preTargets = getTargets();
+        vector<Target> targetVec = detectTrack(preImage, curImage, preTargets);
         setTargets(targetVec);
     }
     runStatus = false;
@@ -38,7 +39,8 @@ void RealTimeMonitor::stop(){
 
 Mat RealTimeMonitor::getCurrentImage(){
     boost::shared_lock<boost::shared_mutex> lock(image_mutex);
-    return currentImage;
+    Mat currentImageClone = currentImage.clone();
+    return currentImageClone;
 }
 
 Mat RealTimeMonitor::getUpdatedImage() {
@@ -46,7 +48,8 @@ Mat RealTimeMonitor::getUpdatedImage() {
     if(cap.isOpened()) {
         cap >> currentImage;
     }
-    return currentImage;
+    Mat updatedImageClone = currentImage.clone();
+    return updatedImageClone;
 }
 
 vector<Target> RealTimeMonitor::getTargets(){

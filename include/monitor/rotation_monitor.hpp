@@ -17,21 +17,18 @@ public:
      */
     RotationMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t);
 
-    /**
-     * @brief Perform a round of detecting and tracking.
-     */
-    vector<Target> detectTrack(const Mat preImage, const Mat curImage);
+    vector<Target> detectTrack(Mat preImage, Mat curImage, vector<Target> preTargets);
 
 protected:
     /**
      * @brief Perform a round of detecting from the current image.
      */
-    map<unsigned long long, Target> detect(const Mat curImage);
+    map<unsigned long long, Target> detect(Mat curImage, vector<Target> preTargets);
 
     /**
      * @brief Perform a round of tracking for the detected targets.
      */
-    map<unsigned long long, Target> track(const Mat curImage, const Mat preImage);
+    map<unsigned long long, Target> track(Mat preImage, Mat curImage, vector<Target> preTargets);
 
     double getOverlapRate(Rect r1, Rect r2);
 
