@@ -27,12 +27,6 @@ private:
 
     Rect region;
 
-	/**
-	 * @brief The image associated with the target's region.
-	 * At different time, the image and the target's region change.
-	 * So every region is associated with an image
-	 */
-    Mat image;
 	enum TARGET_CLASS target_class;
 
     /**
@@ -47,11 +41,8 @@ public:
     void setClass(TARGET_CLASS t);
     Rect getRegion() const;
     void setRegion(Rect r);
-    Mat getImage() const;
-    void setImage(Mat i);
     double getScore() const;
     void setScore(double s);
-
 };
 
 #endif //SUPERVISORY_FRAME_TARGET_HPP

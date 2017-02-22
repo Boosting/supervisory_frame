@@ -30,14 +30,6 @@ void Target::setRegion(Rect r) {
     region = r;
 }
 
-Mat Target::getImage() const{
-    return image;
-}
-
-void Target::setImage(Mat i) {
-    image = i;
-}
-
 double Target::getScore() const{
     return score;
 }
