@@ -7,35 +7,66 @@ RotationMonitor::RotationMonitor(string a, MultiTargetDetector &d, ClassIndepend
     :RealTimeMonitor(a, d, t){}
 
 void RotationMonitor::detectTrackLoop() {
-    int cnt=0;
     while(!stopSignal) {
-        if(cnt==0) detect();
-        else track();
-        this_thread::sleep_for(chrono::milliseconds(10));
-        cnt++;
-        if(cnt==20) cnt=0;
-    }
-}
-
-void RotationMonitor::detect(){
-    cout<<"detecting ..."<<endl;
-    Mat curImage = getUpdatedImage();
-    if(!curImage.empty()) {
-        targets = detector.detectTargets(curImage);
-        for (Target t: targets) {
-            t.setImage(curImage);
+        Mat preImage = getCurrentImage();
+        Mat curImage = getUpdatedImage();
+        map<unsigned long long, Target> detectMap = detect(curImage);
+        map<unsigned long long, Target> trackMap = track(curImage, preImage);
+        map<unsigned long long, Target> fusionMap;
+        for(auto &pair: detectMap){
+            unsigned long long id = pair.first;
+            Target &detectTarget = pair.second;
+            auto it = trackMap.find(id);
+            if(it!=trackMap.end()) {
+                Target &trackTarget = it->second;
+                //fusion
+            } else {
+                fusionMap[id] = detectTarget;
+            }
         }
+        for(auto &pair: trackMap) {
+            unsigned long long id = pair.first;
+            Target &trackTarget = pair.second;
+            if(fusionMap.find(id)==fusionMap.end()){
+                fusionMap[id] = trackTarget;
+            }
+        }
+        vector<Target> updatedTargets(fusionMap.size());
+        int i=0;
+        for(auto &pair: fusionMap){
+            unsigned long long id = pair.first;
+            Target &target = pair.second;
+            target.setId(id);
+            updatedTargets[i] = target;
+            i++;
+        }
+        targets = updatedTargets;
+        this_thread::sleep_for(chrono::milliseconds(10));
     }
 }
 
-void RotationMonitor::track(){
-    cout<<"tracking ..."<<endl;
-    for(Target &t: targets){
-        Mat preImage = t.getImage(), curImage = getUpdatedImage();
-        if(curImage.empty()) continue;
-        Rect preRegion = t.getRegion();
-        t.setImage(curImage);
-        t.setRegion(tracker.getUpdateRegion(preImage, curImage, preRegion));
+map<unsigned long long, Target> RotationMonitor::detect(const Mat curImage){
+    cout<<"detecting ..."<<endl;
+    targets = detector.detectTargets(curImage);
+    for (Target t: targets) {
+        //find id
     }
+}
+
+map<unsigned long long, Target> RotationMonitor::track(const Mat curImage, const Mat preImage){
+    cout<<"tracking ..."<<endl;
+    map<unsigned long long, Target> trackTargets;
+    for(Target &target: targets){
+        if(target.getScore()<0.5) continue; //if score is low, don't perform track
+        unsigned long long id = target.getId();
+        Rect preRegion = target.getRegion();
+        Rect curRegion = tracker.getUpdateRegion(preImage, curImage, preRegion);
+
+        Target updatedTarget;
+        updatedTarget.setClass(target.getClass());
+        updatedTarget.setRegion(curRegion);
+        trackTargets[id] = updatedTarget;
+    }
+    return trackTargets;
 }
 

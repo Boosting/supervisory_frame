@@ -4,13 +4,13 @@
 
 #include "target.hpp"
 
-Target::Target(TARGET_CLASS t):target_class(t), id(0) {}
+Target::Target(TARGET_CLASS t):target_class(t), id(0), score(1.0) {}
 
 void Target::setId(unsigned long long i){
     id = i;
 }
 
-unsigned long long Target::getId(){
+unsigned long long Target::getId() const{
     return id;
 }
 
@@ -36,4 +36,11 @@ Mat Target::getImage() const{
 
 void Target::setImage(Mat i) {
     image = i;
+}
+
+double Target::getScore() const{
+    return score;
+}
+void Target::setScore(double s){
+    score = s;
 }

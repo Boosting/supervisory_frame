@@ -26,12 +26,12 @@ protected:
     /**
      * @brief Perform a round of detecting from the current image.
      */
-    void detect();
+    map<unsigned long long, Target> detect(const Mat curImage);
 
     /**
      * @brief Perform a round of tracking for the detected targets.
      */
-    void track();
+    map<unsigned long long, Target> track(const Mat curImage, const Mat preImage);
 
 };
 

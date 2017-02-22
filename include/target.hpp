@@ -34,16 +34,24 @@ private:
 	 */
     Mat image;
 	enum TARGET_CLASS target_class;
+
+    /**
+     * @brief The score (or probability) of the target, between 0.0 and 1.0.
+     */
+    double score;
 public:
     Target(TARGET_CLASS t=UNKNOWN);
     void setId(unsigned long long i);
-    unsigned long long getId();
+    unsigned long long getId() const;
     TARGET_CLASS getClass() const;
     void setClass(TARGET_CLASS t);
     Rect getRegion() const;
     void setRegion(Rect r);
     Mat getImage() const;
     void setImage(Mat i);
+    double getScore() const;
+    void setScore(double s);
+
 };
 
 #endif //SUPERVISORY_FRAME_TARGET_HPP
