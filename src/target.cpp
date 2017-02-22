@@ -4,7 +4,7 @@
 
 #include "target.hpp"
 
-Target::Target(TARGET_CLASS t):target_class(t), id(0), score(1.0) {}
+Target::Target(Rect r, TARGET_CLASS t, double s, unsigned long long i):region(r), target_class(t), score(s), id(i) {}
 
 void Target::setId(unsigned long long i){
     id = i;

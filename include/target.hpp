@@ -34,7 +34,7 @@ private:
      */
     double score;
 public:
-    Target(TARGET_CLASS t=UNKNOWN);
+    Target(Rect r=Rect(), TARGET_CLASS t=UNKNOWN, double s=1.0, unsigned long long i=0);
     void setId(unsigned long long i);
     unsigned long long getId() const;
     TARGET_CLASS getClass() const;

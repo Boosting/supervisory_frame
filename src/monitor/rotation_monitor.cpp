@@ -59,13 +59,10 @@ map<unsigned long long, Target> RotationMonitor::track(const Mat curImage, const
     for(Target &target: targets){
         if(target.getScore()<0.5) continue; //if score is low, don't perform track
         unsigned long long id = target.getId();
+        Target::TARGET_CLASS target_class = target.getClass();
         Rect preRegion = target.getRegion();
         Rect curRegion = tracker.getUpdateRegion(preImage, curImage, preRegion);
-
-        Target updatedTarget;
-        updatedTarget.setClass(target.getClass());
-        updatedTarget.setRegion(curRegion);
-        trackTargets[id] = updatedTarget;
+        trackTargets[id] = Target(curRegion, target_class, 1.0, id);
     }
     return trackTargets;
 }
