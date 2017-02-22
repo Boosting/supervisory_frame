@@ -18,9 +18,9 @@ public:
     RotationMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t);
 
     /**
-     * @brief Implement the detecting and tracking update targets' regions method.
+     * @brief Perform a round of detecting and tracking.
      */
-    void detectTrackLoop();
+    void detectTrack(Mat preImage, Mat curImage);
 
 protected:
     /**

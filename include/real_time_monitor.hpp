@@ -84,12 +84,7 @@ protected:
     /**
      * @brief Implement the detecting and tracking update targets' regions method in the subclass.
      */
-    virtual void detectTrackLoop() = 0;
-
-    /**
-     * @brief Display image annotated with targets' information.
-     */
-    void display();
+    virtual void detectTrack(Mat preImage, Mat curImage) = 0;
 };
 
 

@@ -9,22 +9,20 @@
 
 int main(){
     string address="/home/dujiajun/car_person_video.mp4";
-    string model_file="/home/dujiajun/py-faster-rcnn/models/kitti/VGG16/faster_rcnn_end2end/test.prototxt";
-    string trained_file="/home/dujiajun/py-faster-rcnn/data/kitti/VGG16/faster_rcnn_end2end.caffemodel";
     YoloDetector detector;
     KcfTracker tracker;
     RotationMonitor monitor(address, detector, tracker);
     monitor.run();
-    while (monitor.isRunning())
-    {
-        Mat frame = monitor.getCurrentImage();
-        if(frame.empty()) continue;
+    while(monitor.isRunning()){
+        Mat image = monitor.getCurrentImage();
         vector<Target> targets = monitor.getTargets();
-        for(Target target: targets){
+        if(image.empty()) continue;
+        for(Target &target: targets){
             Rect region = target.getRegion();
-            rectangle(frame, region, Scalar( 255, 0, 0 ), 1, 1);
+            rectangle(image, region, Scalar( 255, 0, 0 ), 1, 1);
         }
-        imshow("monitor", frame);
-        this_thread::sleep_for(chrono::milliseconds(20));
+        imshow("monitor", image);
+        waitKey(10);
+        this_thread::sleep_for(chrono::milliseconds(100));
     }
 }

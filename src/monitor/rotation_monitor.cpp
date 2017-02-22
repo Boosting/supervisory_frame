@@ -7,9 +7,7 @@
 RotationMonitor::RotationMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t)
     :RealTimeMonitor(a, d, t){}
 
-void RotationMonitor::detectTrackLoop() {
-    Mat preImage = getCurrentImage();
-    Mat curImage = getUpdatedImage();
+void RotationMonitor::detectTrack(Mat preImage, Mat curImage) {
     map<unsigned long long, Target> detectMap = detect(curImage);
     map<unsigned long long, Target> trackMap = track(curImage, preImage);
     map<unsigned long long, Target> fusionMap;
