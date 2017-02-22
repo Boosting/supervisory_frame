@@ -19,6 +19,12 @@ public:
 		UNKNOWN
 	};
 private:
+    /**
+     * @brief The unique id associating with the target.
+     * If id equals to 0, the target has not been associated with an id.
+     */
+	unsigned long long id;
+
     Rect region;
 
 	/**
@@ -30,6 +36,8 @@ private:
 	enum TARGET_CLASS target_class;
 public:
     Target(TARGET_CLASS t=UNKNOWN);
+    void setId(unsigned long long i);
+    unsigned long long getId();
     TARGET_CLASS getClass() const;
     void setClass(TARGET_CLASS t);
     Rect getRegion() const;

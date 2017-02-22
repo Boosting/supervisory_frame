@@ -4,7 +4,15 @@
 
 #include "target.hpp"
 
-Target::Target(TARGET_CLASS t):target_class(t) {}
+Target::Target(TARGET_CLASS t):target_class(t), id(0) {}
+
+void Target::setId(unsigned long long i){
+    id = i;
+}
+
+unsigned long long Target::getId(){
+    return id;
+}
 
 Target::TARGET_CLASS Target::getClass() const{
     return target_class;

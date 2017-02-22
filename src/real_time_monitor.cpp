@@ -6,7 +6,7 @@
 using namespace std;
 
 RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t)
-        :address(a), detector(d), tracker(t), runStatus(false), stopSignal(false) {}
+        :address(a), detector(d), tracker(t), runStatus(false), stopSignal(false){}
 
 void RealTimeMonitor::loop(){
     cout<<"start detect and track loop"<<endl;
