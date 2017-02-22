@@ -20,7 +20,8 @@ void RotationMonitor::detectTrackLoop() {
             auto it = trackMap.find(id);
             if(it!=trackMap.end()) {
                 Target &trackTarget = it->second;
-                //fusion
+                //do fusion to detect and track result
+                fusionMap[id] = detectTarget; // write fusion algorithm later
             } else {
                 fusionMap[id] = detectTarget;
             }
