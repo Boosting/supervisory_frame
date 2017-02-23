@@ -52,7 +52,7 @@ double RotationMonitor::getOverlapRate(Rect r1, Rect r2){
     int x2=min(r1.x+r1.width, r2.x+r2.width);
     int y2=min(r1.y+r1.height, r2.y+r2.height);
     if(x2>=x1 && y2>=y1) {
-        int overlapArea = (x2 - x1) * (y2 - y1);
+        double overlapArea = (x2 - x1) * (y2 - y1);
         overlapRate = overlapArea / (r1.area() + r2.area() - overlapArea);
     }
     return overlapRate;
