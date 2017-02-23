@@ -59,15 +59,18 @@ public:
     vector<Target> getTargets();
 
 protected:
+    MultiTargetDetector &detector;
+    ClassIndependentTracker &tracker;
+
+private:
     VideoCapture cap;
     string address;
     Mat currentImage;
     mutable boost::shared_mutex image_mutex;
+    mutable boost::shared_mutex targets_mutex;
     atomic_bool stopSignal;
     atomic_bool runStatus;
-    vector<Target> targets; // targets needs lock to prevent read operation when written
-    MultiTargetDetector &detector;
-    ClassIndependentTracker &tracker;
+    vector<Target> targets;
 
     /**
      * @brief Get the newest image from the video stream,
@@ -83,13 +86,14 @@ protected:
 
     /**
      * @brief Implement the detecting and tracking update targets' regions method in the subclass.
+     * @param preImage Previous image.
+     * @param curImage Current image.
+     * @param preTargets Previous targets.
+     * @return Vector of targets.
      */
-    virtual void detectTrackLoop() = 0;
+    virtual vector<Target> detectTrack(Mat preImage, Mat curImage, vector<Target> preTargets) = 0;
 
-    /**
-     * @brief Display image annotated with targets' information.
-     */
-    void display();
+    void setTargets(vector<Target> targetVec);
 };
 
 

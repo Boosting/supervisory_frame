@@ -7,11 +7,9 @@
 RotationMonitor::RotationMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t)
     :RealTimeMonitor(a, d, t){}
 
-void RotationMonitor::detectTrackLoop() {
-    Mat preImage = getCurrentImage();
-    Mat curImage = getUpdatedImage();
-    map<unsigned long long, Target> detectMap = detect(curImage);
-    map<unsigned long long, Target> trackMap = track(curImage, preImage);
+vector<Target> RotationMonitor::detectTrack(Mat preImage, Mat curImage, vector<Target> preTargets) {
+    map<unsigned long long, Target> detectMap = detect(curImage, preTargets);
+    map<unsigned long long, Target> trackMap = track(preImage, curImage, preTargets);
     map<unsigned long long, Target> fusionMap;
     for(auto &pair: detectMap){
         unsigned long long id = pair.first;
@@ -41,8 +39,7 @@ void RotationMonitor::detectTrackLoop() {
         updatedTargets[i] = target;
         i++;
     }
-    targets = updatedTargets;
-    this_thread::sleep_for(chrono::milliseconds(10));
+    return updatedTargets;
 }
 
 double RotationMonitor::getOverlapRate(Rect r1, Rect r2){
@@ -58,12 +55,12 @@ double RotationMonitor::getOverlapRate(Rect r1, Rect r2){
     return overlapRate;
 }
 
-map<unsigned long long, Target> RotationMonitor::detect(const Mat curImage){
+map<unsigned long long, Target> RotationMonitor::detect(Mat curImage, vector<Target> preTargets){
     cout<<"detecting ..."<<endl;
     map<unsigned long long, Target> detectTargets;
     vector<Target> detected = detector.detectTargets(curImage);
     set<unsigned long long> idUsed;
-    for(Target &target: targets) {
+    for(Target &target: preTargets) {
         idUsed.insert(target.getId());
     }
     vector<bool> idGotten(detected.size(), false);
@@ -71,7 +68,7 @@ map<unsigned long long, Target> RotationMonitor::detect(const Mat curImage){
 
     // get id from previous targets
     double overlapThresh = 0.3; //only overlap rate > overlapThresh can be seen as the same object
-    for (Target &t1: targets) {
+    for (Target &t1: preTargets) {
         unsigned long long id = t1.getId();
         Rect r1 = t1.getRegion();
         Target::TARGET_CLASS cls1 = t1.getClass();
@@ -115,10 +112,10 @@ map<unsigned long long, Target> RotationMonitor::detect(const Mat curImage){
     return detectTargets;
 }
 
-map<unsigned long long, Target> RotationMonitor::track(const Mat curImage, const Mat preImage){
+map<unsigned long long, Target> RotationMonitor::track(Mat preImage, Mat curImage, vector<Target> preTargets){
     cout<<"tracking ..."<<endl;
     map<unsigned long long, Target> trackTargets;
-    for(Target &target: targets){
+    for(Target &target: preTargets){
         if(target.getScore()<0.5) continue; //if score is low, don't perform track
         unsigned long long id = target.getId();
         Target::TARGET_CLASS target_class = target.getClass();
