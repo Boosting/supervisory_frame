@@ -11,7 +11,8 @@ int main(){
     string address="/home/dujiajun/car_person_video.mp4";
     YoloDetector detector;
     KcfTracker tracker;
-    RotationMonitor monitor(address, detector, tracker);
+    Displayer displayer;
+    RotationMonitor monitor(address, detector, tracker, displayer);
     monitor.run();
     while(monitor.isRunning()){
         this_thread::sleep_for(chrono::milliseconds(100));
