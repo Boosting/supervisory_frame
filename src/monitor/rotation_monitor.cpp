@@ -4,8 +4,8 @@
 #include <set>
 #include "monitor/rotation_monitor.hpp"
 
-RotationMonitor::RotationMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t)
-    :RealTimeMonitor(a, d, t){}
+RotationMonitor::RotationMonitor(string a, MultiTargetDetector &det, ClassIndependentTracker &tra, Displayer &dis)
+    :RealTimeMonitor(a, det, tra, dis){}
 
 vector<Target> RotationMonitor::detectTrack(Mat preImage, Mat curImage, vector<Target> preTargets) {
     clock_t t1=clock();

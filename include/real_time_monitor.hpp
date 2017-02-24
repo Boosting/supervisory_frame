@@ -26,7 +26,7 @@ public:
      * @param d The detector.
      * @param t The tracker.
      */
-    RealTimeMonitor(string a, MultiTargetDetector &det, ClassIndependentTracker &tra, Displayer &dis);
+    RealTimeMonitor(string a, MultiTargetDetector &det, ClassIndependentTracker &tra, Displayer &dis=Displayer());
 
     /**
      * @brief Judge whether the monitor is running.

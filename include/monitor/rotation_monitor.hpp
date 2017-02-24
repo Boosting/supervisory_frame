@@ -15,7 +15,7 @@ public:
      * @param d The detector.
      * @param t The tracker.
      */
-    RotationMonitor(string a, MultiTargetDetector &d, ClassIndependentTracker &t);
+    RotationMonitor(string a, MultiTargetDetector &det, ClassIndependentTracker &tra, Displayer &dis=Displayer());
 
     vector<Target> detectTrack(Mat preImage, Mat curImage, vector<Target> preTargets);
 
