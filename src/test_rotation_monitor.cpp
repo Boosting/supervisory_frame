@@ -14,15 +14,6 @@ int main(){
     RotationMonitor monitor(address, detector, tracker);
     monitor.run();
     while(monitor.isRunning()){
-        Mat image = monitor.getCurrentImage();
-        vector<Target> targets = monitor.getTargets();
-        if(image.empty()) continue;
-        for(Target &target: targets){
-            Rect region = target.getRegion();
-            rectangle(image, region, Scalar( 255, 0, 0 ), 1, 1);
-        }
-        imshow("monitor", image);
-        waitKey(10);
         this_thread::sleep_for(chrono::milliseconds(100));
     }
 }

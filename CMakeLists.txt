@@ -30,6 +30,7 @@ set(SOURCE_FILES
         src/test_rotation_monitor.cpp
         src/monitor/rotation_monitor.cpp
 		src/real_time_monitor.cpp
+        src/displayer.cpp
         src/tracker/kcf_tracker.cpp
         src/class_independent_tracker.cpp
         src/detector/yolo_detector.cpp
