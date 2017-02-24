@@ -8,9 +8,12 @@ RotationMonitor::RotationMonitor(string a, MultiTargetDetector &d, ClassIndepend
     :RealTimeMonitor(a, d, t){}
 
 vector<Target> RotationMonitor::detectTrack(Mat preImage, Mat curImage, vector<Target> preTargets) {
-    map<unsigned long long, Target> detectMap = detect(curImage, preTargets);
-    map<unsigned long long, Target> trackMap = track(preImage, curImage, preTargets);
-    map<unsigned long long, Target> fusionMap;
+    clock_t t1=clock();
+	map<unsigned long long, Target> detectMap = detect(curImage, preTargets);
+	clock_t t2=clock();
+	map<unsigned long long, Target> trackMap = track(preImage, curImage, preTargets);
+    clock_t t3=clock();
+	map<unsigned long long, Target> fusionMap;
     for(auto &pair: detectMap){
         unsigned long long id = pair.first;
         Target &detectTarget = pair.second;
@@ -39,6 +42,10 @@ vector<Target> RotationMonitor::detectTrack(Mat preImage, Mat curImage, vector<T
         updatedTargets[i] = target;
         i++;
     }
+	clock_t t4=clock();
+	cout<<"detect use time: "<<double(t2-t1)/CLOCKS_PER_SEC<<endl;
+	cout<<"track use time: "<<double(t3-t2)/CLOCKS_PER_SEC<<endl;
+	cout<<"fusion use time: "<<double(t4-t3)/CLOCKS_PER_SEC<<endl;
     return updatedTargets;
 }
 
