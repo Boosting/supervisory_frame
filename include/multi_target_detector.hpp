@@ -38,10 +38,10 @@ protected:
     /**
      * @brief Transform bbox class vector to Target vector
      * @param bbox_cls Vector of bbox and class,
-     * each item is vector of size 5: x1, y1, x2, y2, class id.
+     * each item is vector of size 6: x1, y1, x2, y2, class id, score.
      * @return Vector of Target.
      */
-    vector<Target> bboxToTarget(vector<vector<int> > bbox_cls);
+    vector<Target> bboxToTarget(vector<vector<float> > bbox_cls_score);
 };
 
 #endif //SUPERVISORY_FRAME_MULTI_TARGET_DETECTOR_HPP
