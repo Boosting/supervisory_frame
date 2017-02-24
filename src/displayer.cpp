@@ -3,6 +3,7 @@
 //
 
 #include "displayer.hpp"
+Displayer::Displayer():runStatus(false), stopSignal(false){}
 
 void Displayer::run(){
     if(runStatus) return;

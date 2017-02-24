@@ -26,6 +26,7 @@ private:
     mutable boost::shared_mutex targets_mutex;
     void loop();
 public:
+    Displayer();
     void run();
     void stop();
     void setImage(Mat img);
