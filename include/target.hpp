@@ -13,10 +13,17 @@ using namespace cv;
 class Target {
 public:
 	enum TARGET_CLASS {
-		PEDESTRIAN,
+		UNKNOWN,
+		PERSON,
+		BICYCLE,
 		CAR,
-		CYCLIST,
-		UNKNOWN
+		MOTORBIKE,
+		BUS,
+		TRAIN,
+		TRUCK,
+		TRAFFIC_LIGHT,
+		FIRE_HYDRANT,
+		STOP_SIGN
 	};
 private:
     /**

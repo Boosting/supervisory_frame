@@ -17,7 +17,7 @@
 using namespace std;
 
 MultiTargetDetector::MultiTargetDetector() {
-    idToClass = {Target::UNKNOWN, Target::CAR, Target::PEDESTRIAN, Target::CYCLIST};
+    idToClass = {Target::UNKNOWN, Target::CAR, Target::PERSON, Target::BICYCLE};
     cls_num = idToClass.size();
 }
 
@@ -103,7 +103,7 @@ vector<Target> MultiTargetDetector::bboxToTarget(vector<vector<float> > bbox_cls
         Target &target = target_vec[i];
         vector<float> &vec=bbox_cls_score[i];
         int class_id = vec[4];
-        Target::TARGET_CLASS target_class = (class_id >= 0 && class_id < 4) ? idToClass[class_id] : Target::UNKNOWN;
+        Target::TARGET_CLASS target_class = (class_id >= 0 && class_id < idToClass.size()) ? idToClass[class_id] : Target::UNKNOWN;
         target.setClass(target_class);
         int x1=vec[0], y1=vec[1], x2=vec[2], y2=vec[3];
         target.setRegion({x1, y1, x2-x1+1, y2-y1+1});

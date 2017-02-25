@@ -14,13 +14,19 @@ extern "C" {
 #define __cplusplus 201103L
 
 YoloDetector::YoloDetector(bool useGPU) {
-    char cfgfile[100] = "/home/dujiajun/darknet/cfg/yolo-kitti.cfg";
-    char weightfile[100] = "/home/dujiajun/darknet/yolo-kitti_final.weights";
+    char cfgfile[100] = "/home/dujiajun/darknet/cfg/yolo.cfg";
+    char weightfile[100] = "/home/dujiajun/darknet/yolo.weights";
 #ifdef GPU
     gpu_index = 0;
 #else
 	gpu_index = -1;
 #endif
+    idToClass = {
+            Target::UNKNOWN, Target::PERSON, Target::BICYCLE, Target::CAR,
+            Target::MOTORBIKE, Target::UNKNOWN, Target::BUS, Target::TRAIN,
+            Target::TRUCK, Target::UNKNOWN, Target::TRAFFIC_LIGHT, Target::FIRE_HYDRANT,
+            Target::STOP_SIGN
+    };
     darknet_network = parse_network_cfg(cfgfile);
     load_weights(&darknet_network, weightfile);
 	set_batch_network(&darknet_network, 1);
