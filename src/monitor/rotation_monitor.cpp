@@ -11,28 +11,28 @@ vector<Target> RotationMonitor::detectTrack(Mat preImage, Mat curImage, vector<T
     clock_t t1=clock();
 	map<unsigned long long, Target> detectMap = detect(curImage, preTargets);
 	clock_t t2=clock();
-	map<unsigned long long, Target> trackMap = track(preImage, curImage, preTargets);
+//	map<unsigned long long, Target> trackMap = track(preImage, curImage, preTargets);
     clock_t t3=clock();
 	map<unsigned long long, Target> fusionMap;
     for(auto &pair: detectMap){
         unsigned long long id = pair.first;
         Target &detectTarget = pair.second;
-        auto it = trackMap.find(id);
-        if(it!=trackMap.end()) {
-            Target &trackTarget = it->second;
-            //do fusion to detect and track result
-            fusionMap[id] = detectTarget; // write fusion algorithm later
-        } else {
+//        auto it = trackMap.find(id);
+//        if(it!=trackMap.end()) {
+//            Target &trackTarget = it->second;
+//            //do fusion to detect and track result
+//            fusionMap[id] = detectTarget; // write fusion algorithm later
+//        } else {
             fusionMap[id] = detectTarget;
-        }
+//        }
     }
-    for(auto &pair: trackMap) {
-        unsigned long long id = pair.first;
-        Target &trackTarget = pair.second;
-        if(fusionMap.find(id)==fusionMap.end()){
-            fusionMap[id] = trackTarget;
-        }
-    }
+//    for(auto &pair: trackMap) {
+//        unsigned long long id = pair.first;
+//        Target &trackTarget = pair.second;
+//        if(fusionMap.find(id)==fusionMap.end()){
+//            fusionMap[id] = trackTarget;
+//        }
+//    }
     vector<Target> updatedTargets(fusionMap.size());
     int i=0;
     for(auto &pair: fusionMap){
