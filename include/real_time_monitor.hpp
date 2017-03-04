@@ -47,7 +47,7 @@ public:
     void stop();
 
 protected:
-    DetectTrackFusion fusion;
+    DetectTrackFusion &fusion;
     Displayer &displayer;
 
 private:

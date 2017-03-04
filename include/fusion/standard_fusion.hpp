@@ -24,8 +24,6 @@ protected:
      * @brief Perform a round of tracking for the detected targets.
      */
     map<unsigned long long, Target> track(Mat preImage, Mat curImage, vector<Target> preTargets);
-
-    double getOverlapRate(Rect r1, Rect r2);
 };
 
 #endif //SUPERVISORY_FRAME_STANDARD_FUSION_HPP

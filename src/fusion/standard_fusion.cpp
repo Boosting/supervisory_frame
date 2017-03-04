@@ -2,6 +2,8 @@
 // Created by dujiajun on 3/3/17.
 //
 #include "fusion/standard_fusion.hpp"
+#include "utils/opencv_util.hpp"
+#include <functional>
 
 StandardFusion::StandardFusion(MultiTargetDetector &multiTargetDetector, ClassIndependentTracker &classIndependentTracker)
         :detector(multiTargetDetector), tracker(classIndependentTracker){}
@@ -48,19 +50,6 @@ vector<Target> StandardFusion::detectTrack(Mat preImage, Mat curImage, vector<Ta
     return updatedTargets;
 }
 
-double StandardFusion::getOverlapRate(Rect r1, Rect r2){
-    if(r1.area()<=0||r2.area()<=0) return 0;
-    double overlapRate=0;
-    int x1=max(r1.x, r2.x), y1=max(r1.y, r2.y);
-    int x2=min(r1.x+r1.width, r2.x+r2.width);
-    int y2=min(r1.y+r1.height, r2.y+r2.height);
-    if(x2>=x1 && y2>=y1) {
-        double overlapArea = (x2 - x1) * (y2 - y1);
-        overlapRate = overlapArea / (r1.area() + r2.area() - overlapArea);
-    }
-    return overlapRate;
-}
-
 map<unsigned long long, Target> StandardFusion::detect(Mat curImage, vector<Target> preTargets){
     cout<<"detecting ..."<<endl;
     map<unsigned long long, Target> detectTargets;
@@ -85,7 +74,7 @@ map<unsigned long long, Target> StandardFusion::detect(Mat curImage, vector<Targ
             Rect r2 = t2.getRegion();
             Target::TARGET_CLASS cls2 = t2.getClass();
             if(cls2!=cls1) continue;
-            double overlapRate = getOverlapRate(r1, r2);
+            double overlapRate = OpencvUtil::getOverlapRate(r1, r2);
             if(overlapRate>max(overlapThresh, max(maxOverlapRate, overlapVec[i]))) {
                 indice = i;
                 maxOverlapRate = overlapRate;
