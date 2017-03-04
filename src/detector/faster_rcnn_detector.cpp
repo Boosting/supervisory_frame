@@ -25,14 +25,12 @@ vector<Target> FasterRcnnDetector::detectTargets(const Mat& image) {
     vector<vector<float> > rois = getOutputData("rois");
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
     vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
-//printVec(rois);
-//printVec(cls_prob);
-//printVec(bbox_pred);
-    vector<vector<vector<int> > > bbox = this->bbox_transform(rois, bbox_pred);
 
-    vector<vector<int> > bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
-    vector<Target> target_vec = bboxToTarget(bbox_cls);
-    return target_vec;
+    vector<vector<vector<float> > > bbox = bbox_transform(rois, bbox_pred);
+
+    vector<vector<float> > bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
+    vector<Target> curTargets = bboxToTarget(bbox_cls);
+    return curTargets;
 }
 
 Blob<float>* FasterRcnnDetector::createImInfoBlob(const Mat& image){

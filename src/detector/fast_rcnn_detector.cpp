@@ -24,9 +24,9 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
 
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
     vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
-    vector<vector<vector<int> > > bbox = bbox_transform(regions, bbox_pred);
+    vector<vector<vector<float> > > bbox = bbox_transform(regions, bbox_pred);
 
-    vector<vector<int> > bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
-    vector<Target> target_vec = bboxToTarget(bbox_cls);
+    vector<vector<float> > bbox_cls_score = nms(bbox, cls_prob); //bbox + cls = 4 + 1
+    vector<Target> target_vec = bboxToTarget(bbox_cls_score);
     return target_vec;
 }

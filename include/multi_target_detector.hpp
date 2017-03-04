@@ -25,8 +25,8 @@ protected:
      */
     vector<Target::TARGET_CLASS> idToClass;
 
-    vector<vector<vector<int> > > bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred);
-    vector<vector<int> > nms(const vector<vector<vector<int> > > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.7, float min_trust_score = 0.1);
+    vector<vector<vector<float> > > bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred);
+    vector<vector<float> > nms(const vector<vector<vector<float> > > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.7, float min_trust_score = 0.1);
 
     /**
      * @brief Transform bbox class vector to Target vector

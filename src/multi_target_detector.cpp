@@ -6,10 +6,10 @@
 #include "multi_target_detector.hpp"
 using namespace std;
 
-vector<vector<vector<int> > > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred){
+vector<vector<vector<float> > > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred){
     int cls_num = idToClass.size();
     int roi_num = rois.size();
-    vector<vector<vector<int> > > bbox(roi_num, vector<vector<int> >(cls_num, vector<int>(4)));
+    vector<vector<vector<float> > > bbox(roi_num, vector<vector<float> >(cls_num, vector<float>(4)));
     for(int i=0;i<roi_num;i++) {
         float x1 = rois[i][1], y1 = rois[i][2], x2 = rois[i][3], y2 = rois[i][4]; //rois[i][0] is not position
         float width = x2 - x1 + 1, height = y2 - y1 + 1, center_x = x1 + width * 0.5, center_y = y1 + height * 0.5;
@@ -26,8 +26,8 @@ vector<vector<vector<int> > > MultiTargetDetector::bbox_transform(const vector<v
     return bbox;
 }
 
-vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > > &bbox, const vector<vector<float> > &cls_prob, float thresh, float min_trust_score) {
-    vector<vector<int> > bbox_cls; //x1, y1, x2, y2, cls
+vector<vector<float> > MultiTargetDetector::nms(const vector<vector<vector<float> > > &bbox, const vector<vector<float> > &cls_prob, float thresh, float min_trust_score) {
+    vector<vector<float> > bbox_cls_score; //x1, y1, x2, y2, cls, score
     int cls_num=idToClass.size();
     int roi_num = bbox.size();
     for(int cls_id=1;cls_id<cls_num;cls_id++){
@@ -68,11 +68,12 @@ vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > 
         for(int i=0;i<bbox_score.size();i++){
             if(!is_suppressed[i]){
                 int x1=bbox_score[i][0], y1=bbox_score[i][1], x2=bbox_score[i][2], y2=bbox_score[i][3];
-                bbox_cls.push_back({x1, y1, x2, y2, cls_id});
+                float score = bbox_score[i][5];
+                bbox_cls_score.push_back({x1, y1, x2, y2, cls_id, score});
             }
         }
     }
-    return bbox_cls;
+    return bbox_cls_score;
 }
 
 
