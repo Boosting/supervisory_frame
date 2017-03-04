@@ -12,8 +12,7 @@
 #include<thread>
 #include <atomic>
 #include "target.hpp"
-#include "class_independent_tracker.hpp"
-#include "multi_target_detector.hpp"
+#include "detect_track_fusion.hpp"
 #include "displayer.hpp"
 
 using namespace std;
@@ -26,7 +25,7 @@ public:
      * @param d The detector.
      * @param t The tracker.
      */
-    RealTimeMonitor(string a, MultiTargetDetector &det, ClassIndependentTracker &tra, Displayer &dis);
+    RealTimeMonitor(string a, DetectTrackFusion &detectTrackFusion, Displayer &dis);
 
     /**
      * @brief Judge whether the monitor is running.
@@ -48,8 +47,7 @@ public:
     void stop();
 
 protected:
-    MultiTargetDetector &detector;
-    ClassIndependentTracker &tracker;
+    DetectTrackFusion fusion;
     Displayer &displayer;
 
 private:
@@ -57,20 +55,11 @@ private:
     string address;
     atomic_bool stopSignal;
     atomic_bool runStatus;
-
+protected:
     /**
      * @brief Perform the detecting and tracking loop.
      */
     void loop();
-
-    /**
-     * @brief Implement the detecting and tracking update targets' regions method in the subclass.
-     * @param preImage Previous image.
-     * @param curImage Current image.
-     * @param preTargets Previous targets.
-     * @return Vector of targets.
-     */
-    virtual vector<Target> detectTrack(Mat preImage, Mat curImage, vector<Target> preTargets) = 0;
 };
 
 

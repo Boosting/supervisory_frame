@@ -6,8 +6,8 @@
 
 using namespace std;
 
-RealTimeMonitor::RealTimeMonitor(string a, MultiTargetDetector &det, ClassIndependentTracker &tra, Displayer &dis)
-        :address(a), detector(det), tracker(tra), displayer(dis), runStatus(false), stopSignal(false){}
+RealTimeMonitor::RealTimeMonitor(string a, DetectTrackFusion &detectTrackFusion, Displayer &dis)
+        :address(a), fusion(detectTrackFusion), displayer(dis), runStatus(false), stopSignal(false){}
 
 void RealTimeMonitor::loop(){
     cout<<"start detect and track loop"<<endl;
@@ -20,7 +20,7 @@ void RealTimeMonitor::loop(){
         cap>>curImage;
         preTargets = curTargets;
         if(preImage.empty()||curImage.empty()) break;
-        curTargets = detectTrack(preImage, curImage, preTargets);
+        curTargets = fusion.detectTrack(preImage, curImage, preTargets);
         displayer.setImage(curImage);
         displayer.setTargets(curTargets);
     }
