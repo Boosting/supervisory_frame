@@ -1,7 +1,6 @@
 //
-// Created by dujiajun on 2/11/17.
+// Created by dujiajun on 3/4/17.
 //
-
 
 #include "detector/yolo_detector.hpp"
 #include "fusion/detector_only_fusion.hpp"
