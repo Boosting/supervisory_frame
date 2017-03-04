@@ -1,27 +1,13 @@
 //
 // Created by dujiajun on 2/2/17.
 //
-//#include <caffe/caffe.hpp>
 #include <opencv2/opencv.hpp>
-#include <iosfwd>
 #include <memory>
-#include <string>
-#include <utility>
-#include <vector>
-#include <cstdio>
-#include <cstdlib>
-#include <ctime>
-#include <iostream>
 #include "multi_target_detector.hpp"
-//using namespace caffe;
 using namespace std;
 
-MultiTargetDetector::MultiTargetDetector() {
-    idToClass = {Target::UNKNOWN, Target::CAR, Target::PERSON, Target::BICYCLE};
-    cls_num = idToClass.size();
-}
-
 vector<vector<vector<int> > > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred){
+    int cls_num = idToClass.size();
     int roi_num = rois.size();
     vector<vector<vector<int> > > bbox(roi_num, vector<vector<int> >(cls_num, vector<int>(4)));
     for(int i=0;i<roi_num;i++) {
@@ -42,6 +28,7 @@ vector<vector<vector<int> > > MultiTargetDetector::bbox_transform(const vector<v
 
 vector<vector<int> > MultiTargetDetector::nms(const vector<vector<vector<int> > > &bbox, const vector<vector<float> > &cls_prob, float thresh, float min_trust_score) {
     vector<vector<int> > bbox_cls; //x1, y1, x2, y2, cls
+    int cls_num=idToClass.size();
     int roi_num = bbox.size();
     for(int cls_id=1;cls_id<cls_num;cls_id++){
         vector<vector<float> > bbox_score;
@@ -109,6 +96,5 @@ vector<Target> MultiTargetDetector::bboxToTarget(vector<vector<float> > bbox_cls
         target.setRegion({x1, y1, x2-x1+1, y2-y1+1});
         target.setScore(vec[5]);
     }
-
     return target_vec;
 }

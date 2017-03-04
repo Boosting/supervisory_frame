@@ -13,8 +13,6 @@ using namespace std;
  */
 class MultiTargetDetector{
 public:
-    MultiTargetDetector();
-
     /**
      * @brief Detect the targets from the image.
      * @param image The image.
@@ -22,11 +20,6 @@ public:
      */
     virtual vector<Target> detectTargets(const Mat& image) = 0;
 protected:
-    /**
-     * @brief The number of target classes, including the background
-     */
-    int cls_num;
-
     /**
      * @brief A vector of target classes, the first element is background
      */

@@ -13,6 +13,6 @@ using namespace std;
 
 class DetectTrackFusion{
 public:
-    vector<Target> detectTrack(Mat preImage, Mat curImage, vector<Target> preTargets) = 0;
+    virtual vector<Target> detectTrack(Mat preImage, Mat curImage, vector<Target> preTargets) = 0;
 };
 #endif //SUPERVISORY_FRAME_DETECT_TRACK_FUSION_HPP
