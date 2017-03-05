@@ -46,6 +46,7 @@ vector<Rect> BackgroundSubstractionMotionDetector::getRegions(const vector<vecto
             while(!que.empty()){
                 vector<int> &xy=que.front();
                 int x=xy[0], y=xy[1];
+                if(x<0 || x>=width || y<0 || y>=height) continue;
                 if(!binaryImage[x][y] || visited[x][y]) continue;
                 visited[x][y] = true;
                 x1=min(x1, x), x2=max(x2, x);
@@ -54,6 +55,10 @@ vector<Rect> BackgroundSubstractionMotionDetector::getRegions(const vector<vecto
                 que.push({x, y-1});
                 que.push({x+1, y});
                 que.push({x-1, y});
+                que.push({x-1, y-1});
+                que.push({x-1, y+1});
+                que.push({x+1, y-1});
+                que.push({x+1, y+1});
                 que.pop();
             }
             Rect region(x1, y1, x2-x1+1, y2-y1+1);
