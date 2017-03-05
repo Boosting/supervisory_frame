@@ -9,7 +9,13 @@ FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& train
 
 vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     Blob<float>* image_blob = createImageBlob(image);
-    vector<vector<float> > regions = getMovingRegions(image);
+    vector<Rect> rect_regions = motion_detector.detect(image);
+    vector<vector<float> > regions(rect_regions.size());
+    for(int i=0;i<rect_regions.size();i++){
+        float x1=rect_regions[i].x, y1=rect_regions[i].y;
+        float w=rect_regions[i].width, h=rect_regions[i].height;
+        regions[i] = {x1, y1, x1+w, y1+h};
+    }
     Blob<float>* rois = createRoisBlob(regions);
     vector<Blob<float>* > bottom = {image_blob, rois};
     float type = 0.0;
@@ -30,14 +36,6 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     vector<vector<float> > bbox_cls_score = nms(bbox, cls_prob); //bbox + cls = 4 + 1
     vector<Target> target_vec = bboxToTarget(bbox_cls_score);
     return target_vec;
-}
-
-vector<vector<float> > FastRcnnDetector::getMovingRegions(const Mat &image) {
-    Mat GaussianImage, foreground;
-    GaussianBlur(image, GaussianImage, {11, 11}, 2);
-    mog->apply(GaussianImage, foreground, 0.001);
-    erode(foreground, foreground, cv::Mat());
-    dilate(foreground, foreground, cv::Mat());
 }
 
 Blob<float>* createRoisBlob(const vector<vector<float> > &regions){
