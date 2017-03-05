@@ -16,7 +16,14 @@ public:
     FastRcnnDetector(const string& model_file, const string& trained_file, bool useGPU = true);
     vector<Target> detectTargets(const Mat &image);
 protected:
-    Blob<float>* createRoisBlob(const vector<vector<int> > &regions);
+    /**
+     * @brief x1, y1, x2 ,y2 between 0~1
+     * @param image
+     * @return
+     */
+    vector<vector<float> > getMovingRegions(const Mat &image);
+    Blob<float>* createRoisBlob(const vector<vector<float> > &regions);
+    Ptr<BackgroundSubtractorMOG2> mog;
 };
 
 #endif //SUPERVISORY_FRAME_FAST_RCNN_DETECTOR_HPP
