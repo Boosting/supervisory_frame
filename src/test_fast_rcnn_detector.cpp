@@ -8,7 +8,7 @@
 
 int main(){
     string address="/home/dujiajun/car_person_video.mp4";
-    FastRcnnDetector detector("", "");
+    FastRcnnDetector detector("/home/dujiajun/fast-rcnn/models/VGG16/test.prototxt", "/home/dujiajun/fast-rcnn/data/fast_rcnn_models/vgg16_fast_rcnn_iter_40000.caffemodel", false);
     DetectorOnlyFusion fusion(detector);
     Displayer displayer;
     RealTimeMonitor monitor(address, fusion, displayer);

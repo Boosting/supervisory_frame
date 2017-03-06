@@ -38,7 +38,7 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     return target_vec;
 }
 
-Blob<float>* createRoisBlob(const vector<vector<float> > &regions){
+Blob<float>* FastRcnnDetector::createRoisBlob(const vector<vector<float> > &regions){
     int region_num = regions.size();
     vector<int> rois_shape={region_num, 5};
     Blob<float>* rois_blob = new Blob<float>(rois_shape); //may cause memory leak
