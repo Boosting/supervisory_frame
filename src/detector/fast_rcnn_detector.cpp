@@ -10,8 +10,9 @@ FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& train
 vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     Blob<float>* image_blob = createImageBlob(image);
     vector<Rect> rect_regions = motion_detector.detect(image);
-    vector<vector<float> > regions(rect_regions.size());
-    for(int i=0;i<rect_regions.size();i++){
+    int region_num = rect_regions.size();
+    vector<vector<float> > regions(region_num);
+    for(int i=0;i<region_num;i++){
         float x1=rect_regions[i].x, y1=rect_regions[i].y;
         float w=rect_regions[i].width, h=rect_regions[i].height;
         regions[i] = {x1, y1, x1+w, y1+h};
@@ -20,7 +21,9 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     vector<Blob<float>* > bottom = {image_blob, rois};
     float type = 0.0;
     vector<int> image_shape = {1, 3, image.rows, image.cols};
+    vector<int> rois_shape = {region_num, 5};
     net->input_blobs()[0]->Reshape(image_shape);
+    net->input_blobs()[1]->Reshape(rois_shape);
     net->Reshape();
 
     clock_t time1, time2;
