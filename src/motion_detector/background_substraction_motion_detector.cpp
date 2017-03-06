@@ -56,11 +56,7 @@ vector<Rect> BackgroundSubstractionMotionDetector::getRegions(const vector<vecto
                 que.push({x, y+1});
                 que.push({x, y-1});
                 que.push({x+1, y});
-                que.push({x-1, y});
-                que.push({x-1, y-1});
-                que.push({x-1, y+1});
-                que.push({x+1, y-1});
-                que.push({x+1, y+1});
+//                que.push({x-1, y});  no need to search above
             }
             Rect region(x1, y1, x2-x1+1, y2-y1+1);
             if(region_size>=1000){
