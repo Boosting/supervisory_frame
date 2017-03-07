@@ -7,11 +7,13 @@
 using namespace std;
 
 vector<vector<vector<float> > > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred){
-    int cls_num = idToClass.size();
+    if(rois.empty()) return vector<vector<vector<float> > >();
+	
+	int cls_num = bbox_pred[0].size();
     int roi_num = rois.size();
     vector<vector<vector<float> > > bbox(roi_num, vector<vector<float> >(cls_num, vector<float>(4)));
     for(int i=0;i<roi_num;i++) {
-        float x1 = rois[i][1], y1 = rois[i][2], x2 = rois[i][3], y2 = rois[i][4]; //rois[i][0] is not position
+        float x1 = rois[i][0], y1 = rois[i][1], x2 = rois[i][2], y2 = rois[i][3];
         float width = x2 - x1 + 1, height = y2 - y1 + 1, center_x = x1 + width * 0.5, center_y = y1 + height * 0.5;
         for (int j = 0; j < cls_num; j++) {
             int offset = j * cls_num;
@@ -28,7 +30,9 @@ vector<vector<vector<float> > > MultiTargetDetector::bbox_transform(const vector
 
 vector<vector<float> > MultiTargetDetector::nms(const vector<vector<vector<float> > > &bbox, const vector<vector<float> > &cls_prob, float thresh, float min_trust_score) {
     vector<vector<float> > bbox_cls_score; //x1, y1, x2, y2, cls, score
-    int cls_num=idToClass.size();
+    if(bbox.empty()) return vector<vector<float> >();
+	
+	int cls_num = cls_prob[0].size();
     int roi_num = bbox.size();
     for(int cls_id=1;cls_id<cls_num;cls_id++){
         vector<vector<float> > bbox_score;
