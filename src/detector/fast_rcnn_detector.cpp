@@ -5,7 +5,15 @@
 #include "detector/fast_rcnn_detector.hpp"
 
 FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& trained_file, bool useGPU)
-        :CaffeDetector(model_file, trained_file, useGPU) {}
+        :CaffeDetector(model_file, trained_file, useGPU) {
+    // VOC 1+20 classes
+    idToClass = {
+            Target::UNKNOWN, Target::PERSON, Target::UNKNOWN, Target::UNKNOWN,
+            Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN,
+            Target::UNKNOWN, Target::BICYCLE, Target::UNKNOWN, Target::BUS,
+            Target::CAR, Target::MOTORBIKE, Target::TRAIN
+    };
+}
 
 vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     Blob<float>* image_blob = createImageBlob(image);
@@ -39,7 +47,7 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     vector<vector<vector<float> > > bbox = bbox_transform(regions, bbox_pred);
 
     vector<vector<float> > bbox_cls_score = nms(bbox, cls_prob); //bbox + cls = 4 + 1
-    vector<Target> target_vec = bboxToTarget(bbox_cls_score);
+    vector<Target> target_vec = bboxToTarget(bbox_cls_score, idToClass);
     return target_vec;
 }
 
@@ -50,7 +58,7 @@ Blob<float>* FastRcnnDetector::createRoisBlob(const vector<vector<float> > &regi
     float* rois_blob_cpu_data = rois_blob->mutable_cpu_data();
     for(int i=0;i<regions.size();i++){
         int index = 5*i;
-        rois_blob_cpu_data[index] = i;
+        rois_blob_cpu_data[index] = 0;
         rois_blob_cpu_data[index+1] = regions[i][0];
         rois_blob_cpu_data[index+2] = regions[i][1];
         rois_blob_cpu_data[index+3] = regions[i][2];

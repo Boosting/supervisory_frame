@@ -34,7 +34,7 @@ protected:
      * each item is vector of size 6: x1, y1, x2, y2, class id, score.
      * @return Vector of Target.
      */
-    vector<Target> bboxToTarget(vector<vector<float> > bbox_cls_score);
+    vector<Target> bboxToTarget(vector<vector<float> > &bbox_cls_score, vector<Target::TARGET_CLASS> &idToClass);
 };
 
 #endif //SUPERVISORY_FRAME_MULTI_TARGET_DETECTOR_HPP

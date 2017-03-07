@@ -35,7 +35,7 @@ YoloDetector::YoloDetector(bool useGPU) {
 vector<Target> YoloDetector::detectTargets(const Mat& mat_image) {
     image im = createImage(mat_image);
     vector<vector<float> > bbox_cls_score = kitti_detect(im, darknet_network);
-    vector<Target> targets = bboxToTarget(bbox_cls_score);
+    vector<Target> targets = bboxToTarget(bbox_cls_score, idToClass);
     return targets;
 }
 

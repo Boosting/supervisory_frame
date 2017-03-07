@@ -77,7 +77,7 @@ vector<vector<float> > MultiTargetDetector::nms(const vector<vector<vector<float
 }
 
 
-vector<Target> MultiTargetDetector::bboxToTarget(vector<vector<float> > bbox_cls_score) {
+vector<Target> MultiTargetDetector::bboxToTarget(vector<vector<float> > &bbox_cls_score, vector<Target::TARGET_CLASS> &idToClass) {
     for(int i=0;i<bbox_cls_score.size();i++){
         cout<<"x1: "<<bbox_cls_score[i][0]<<" y1: "<<bbox_cls_score[i][1]<<" x2: "<<bbox_cls_score[i][2]<<" y2: "<<bbox_cls_score[i][3]<<endl;
         cout<<"cls: "<<bbox_cls_score[i][4]<<endl;
