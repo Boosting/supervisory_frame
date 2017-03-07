@@ -15,8 +15,6 @@ vector<Rect> BackgroundSubstractionMotionDetector::detect(const Mat &image){
     mog->apply(gaussianImage, foreground, 0.001);
     erode(foreground, foreground, cv::Mat());
     dilate(foreground, foreground, cv::Mat());
-//    imshow("motion detector", foreground);
-//    waitKey(5);
     vector<vector<int> > foregroundMask = getForegroundMask(foreground);
     vector<Rect> regions = getRegions(foregroundMask);
     return regions;
@@ -49,14 +47,14 @@ vector<Rect> BackgroundSubstractionMotionDetector::getRegions(vector<vector<int>
     for(int i=0;i<width;i++){
         for(int j=0;j<height;j++){
             if(foregroundMask[i][j]!=2 || visited[i][j]) continue;
-            queue<vector<int> > que;
+            queue<Point> que;
             que.push({i, j});
             Point init_point(i, j);
             int x1=i, x2=i, y1=j, y2=j;
             int region_size = 0;
             while(!que.empty()){
-                vector<int> &xy=que.front();
-                int x=xy[0], y=xy[1];
+                Point &point=que.front();
+                int x=point.x, y=point.y;
                 que.pop();
                 if(x<0 || x>=width || y<0 || y>=height) continue;
                 if(foregroundMask[x][y]!=2 || visited[x][y]) continue;
