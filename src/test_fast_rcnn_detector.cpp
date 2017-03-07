@@ -7,8 +7,10 @@
 #include "real_time_monitor.hpp"
 
 int main(){
-    string address="/home/dujiajun/car_person_video.mp4";
-    FastRcnnDetector detector("/home/dujiajun/fast-rcnn/models/VGG16/test.prototxt", "/home/dujiajun/fast-rcnn/data/fast_rcnn_models/vgg16_fast_rcnn_iter_40000.caffemodel");
+    string address="/home/dujiajun/CUHKSquare.mpg";
+    string prototxt = "/home/dujiajun/fast-rcnn/models/VGG_CNN_M_1024/test.prototxt";
+    string trained_model = "/home/dujiajun/fast-rcnn/data/fast_rcnn_models/vgg_cnn_m_1024_fast_rcnn_iter_40000.caffemodel";
+    FastRcnnDetector detector(prototxt, trained_model);
     DetectorOnlyFusion fusion(detector);
     Displayer displayer;
     RealTimeMonitor monitor(address, fusion, displayer);

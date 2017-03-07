@@ -10,6 +10,8 @@ FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& train
 vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     Blob<float>* image_blob = createImageBlob(image);
     vector<Rect> rect_regions = motion_detector.detect(image);
+    if(rect_regions.empty()) return vector<Target>();
+
     int region_num = rect_regions.size();
     vector<vector<float> > regions(region_num);
     for(int i=0;i<region_num;i++){
