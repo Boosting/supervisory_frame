@@ -50,8 +50,6 @@ vector<vector<float> > MultiTargetDetector::nms(const vector<vector<vector<float
              }
         );
 
-        cout<<"cls id: "<<cls_id<<" bbox_score num: "<<bbox_score.size()<<endl;
-
         vector<bool> is_suppressed(bbox_score.size(), false);
         for(int i=0;i<bbox_score.size();i++){
             if(is_suppressed[i]) continue;
@@ -73,7 +71,7 @@ vector<vector<float> > MultiTargetDetector::nms(const vector<vector<vector<float
         for(int i=0;i<bbox_score.size();i++){
             if(!is_suppressed[i]){
                 int x1=bbox_score[i][0], y1=bbox_score[i][1], x2=bbox_score[i][2], y2=bbox_score[i][3];
-                float score = bbox_score[i][5];
+                float score = bbox_score[i][4];
                 bbox_cls_score.push_back({x1, y1, x2, y2, cls_id, score});
             }
         }
