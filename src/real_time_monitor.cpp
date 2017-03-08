@@ -21,6 +21,15 @@ void RealTimeMonitor::loop(){
         preTargets = curTargets;
         if(preImage.empty()||curImage.empty()) break;
         curTargets = fusion.detectTrack(preImage, curImage, preTargets);
+        for(Target &target: curTargets) {
+            Rect region = target.getRegion();
+            int x1 = region.x, y1 = region.y;
+            int w = region.width, h = region.height;
+            int x2 = x1+w-1, y2 = y1+h-1;
+            double score = target.getScore();
+            cout << "x1: " << x1 << " y1: " << y1 << " x2: " << x2 << " y2: " << y2 << endl;
+            cout << "score: " << score << endl;
+        }
         displayer.setImage(curImage);
         displayer.setTargets(curTargets);
     }

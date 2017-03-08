@@ -119,6 +119,7 @@ vector<Target> CaffeDetector::nms(const vector<vector<Rect> > &bbox, const vecto
         }
         for(int i=0;i<bbox_score.size();i++){
             if(!is_suppressed[i]){
+                Target target;
                 int x1=bbox_score[i][0], y1=bbox_score[i][1], x2=bbox_score[i][2], y2=bbox_score[i][3];
                 float score = bbox_score[i][4];
                 Target::TARGET_CLASS target_class = (cls_id >= 0 && cls_id < idToClass.size()) ? idToClass[cls_id] : Target::UNKNOWN;

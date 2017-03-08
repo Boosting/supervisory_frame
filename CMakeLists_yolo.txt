@@ -28,9 +28,7 @@ set(SOURCE_FILES
         src/real_time_monitor.cpp
         src/displayer.cpp
         src/fusion/detector_only_fusion.cpp
-        src/detect_track_fusion.cpp
         src/detector/yolo_detector.cpp
-        src/multi_target_detector.cpp
         src/target.cpp
         src/utils/opencv_util.cpp)
 
