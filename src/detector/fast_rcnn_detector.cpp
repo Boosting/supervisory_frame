@@ -8,10 +8,12 @@ FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& train
         :CaffeDetector(model_file, trained_file, useGPU) {
     // VOC 1+20 classes
     idToClass = {
-            Target::UNKNOWN, Target::PERSON, Target::UNKNOWN, Target::UNKNOWN,
+            Target::UNKNOWN,
+            Target::UNKNOWN, Target::BICYCLE, Target::UNKNOWN, Target::UNKNOWN,
+            Target::UNKNOWN, Target::BUS, Target::CAR, Target::UNKNOWN,
             Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN,
-            Target::UNKNOWN, Target::BICYCLE, Target::UNKNOWN, Target::BUS,
-            Target::CAR, Target::MOTORBIKE, Target::TRAIN
+            Target::UNKNOWN, Target::MOTORBIKE, Target::PERSON, Target::UNKNOWN,
+            Target::UNKNOWN, Target::UNKNOWN, Target::TRAIN, Target::UNKNOWN
     };
 }
 
