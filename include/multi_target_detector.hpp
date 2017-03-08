@@ -25,16 +25,8 @@ protected:
      */
     vector<Target::TARGET_CLASS> idToClass;
 
-    vector<vector<vector<float> > > bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred, const Mat& image);
-    vector<vector<float> > nms(const vector<vector<vector<float> > > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.7, float min_trust_score = 0.1);
-
-    /**
-     * @brief Transform bbox class vector to Target vector
-     * @param bbox_cls Vector of bbox and class,
-     * each item is vector of size 6: x1, y1, x2, y2, class id, score.
-     * @return Vector of Target.
-     */
-    vector<Target> bboxToTarget(vector<vector<float> > &bbox_cls_score, vector<Target::TARGET_CLASS> &idToClass);
+    vector<vector<Rect> > bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred, const Mat& image);
+    vector<Target> nms(const vector<vector<Rect> > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.7, float min_trust_score = 0.1);
 };
 
 #endif //SUPERVISORY_FRAME_MULTI_TARGET_DETECTOR_HPP
