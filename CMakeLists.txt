@@ -33,7 +33,6 @@ set(SOURCE_FILES
         src/fusion/detector_only_fusion.cpp
         src/detector/fast_rcnn_detector.cpp
         src/detector/caffe_detector.cpp
-        src/multi_target_detector.cpp
         src/motion_detector/background_substraction_motion_detector.cpp
         src/target.cpp
         src/utils/opencv_util.cpp)
