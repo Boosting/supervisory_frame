@@ -42,13 +42,13 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     time1 = clock();
     net->Forward(bottom, &type);
     time2 = clock();
-    cout<<"forward use time: "<< (double)(time2 - time1) / CLOCKS_PER_SEC <<endl<<endl<<endl;
+    cout<<"forward use time: "<< (double)(time2 - time1) / CLOCKS_PER_SEC <<endl;
 
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
     vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
     vector<vector<vector<float> > > bbox = bbox_transform(regions, bbox_pred, image);
 
-    vector<vector<float> > bbox_cls_score = nms(bbox, cls_prob); //bbox + cls = 4 + 1
+    vector<vector<float> > bbox_cls_score = nms(bbox, cls_prob, 0.7, 0.01); //bbox + cls = 4 + 1
     vector<Target> target_vec = bboxToTarget(bbox_cls_score, idToClass);
     return target_vec;
 }
