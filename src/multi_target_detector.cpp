@@ -6,9 +6,9 @@
 #include "multi_target_detector.hpp"
 using namespace std;
 
-vector<vector<vector<float> > > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred){
+vector<vector<vector<float> > > MultiTargetDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred, const Mat& image){
     if(rois.empty()) return vector<vector<vector<float> > >();
-	
+	int image_height = image.rows, image_width = image.cols;
 	int cls_num = bbox_pred[0].size();
     int roi_num = rois.size();
     vector<vector<vector<float> > > bbox(roi_num, vector<vector<float> >(cls_num, vector<float>(4)));
@@ -22,7 +22,8 @@ vector<vector<vector<float> > > MultiTargetDetector::bbox_transform(const vector
             float pred_center_x = dx * width + center_x, pred_center_y = dy * height + center_y;
             float pred_x1 = pred_center_x - pred_width * 0.5, pred_x2 = pred_center_x + pred_width * 0.5;
             float pred_y1 = pred_center_y - pred_height * 0.5, pred_y2 = pred_center_y + pred_height * 0.5;
-            bbox[i][j][0] = pred_x1, bbox[i][j][1] = pred_y1, bbox[i][j][2] = pred_x2, bbox[i][j][3] = pred_y2;  // convert float to int may be ambiguous
+            bbox[i][j][0] = max(int(pred_x1), 0), bbox[i][j][1] = max(int(pred_y1), 0);
+            bbox[i][j][2] = min(int(pred_x2), image_height-1), bbox[i][j][3] = min(int(pred_y2), image_width-1);  // convert float to int may be ambiguous
         }
     }
     return bbox;
@@ -40,7 +41,7 @@ vector<vector<float> > MultiTargetDetector::nms(const vector<vector<vector<float
             // can speed up by delete low score bbox
             float score=cls_prob[i][cls_id];
             int x1=bbox[i][cls_id][0], y1=bbox[i][cls_id][1], x2=bbox[i][cls_id][2], y2=bbox[i][cls_id][3];
-            if(score<min_trust_score || x1>x2 || y1>y2) continue; // remove low score or wrong position
+            if(score<min_trust_score || x1>=x2 || y1>=y2) continue; // remove low score or wrong position
             bbox_score.push_back({x1, y1, x2, y2, score});
         }
         sort(bbox_score.begin(), bbox_score.end(),
