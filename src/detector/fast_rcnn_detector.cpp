@@ -19,16 +19,9 @@ FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& train
 
 vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     Blob<float>* image_blob = createImageBlob(image);
-    vector<Rect> rect_regions = motion_detector.detect(image);
-    if(rect_regions.empty()) return vector<Target>();
-
-    int region_num = rect_regions.size();
-    vector<vector<float> > regions(region_num);
-    for(int i=0;i<region_num;i++){
-        float x1=rect_regions[i].x, y1=rect_regions[i].y;
-        float w=rect_regions[i].width, h=rect_regions[i].height;
-        regions[i] = {x1, y1, x1+w, y1+h};
-    }
+    vector<Rect> regions = getRegionProposals(image);
+    if(regions.empty()) return vector<Target>();
+    int region_num = regions.size();
     Blob<float>* rois = createRoisBlob(regions);
     vector<Blob<float>* > bottom = {image_blob, rois};
     float type = 0.0;
@@ -51,18 +44,27 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     return targets;
 }
 
-Blob<float>* FastRcnnDetector::createRoisBlob(const vector<vector<float> > &regions){
+vector<Rect> FastRcnnDetector::getRegionProposals(const Mat &image) {
+    vector<Rect> regions = motion_detector.detect(image);
+    return regions;
+}
+
+Blob<float>* FastRcnnDetector::createRoisBlob(const vector<Rect> &regions){
     int region_num = regions.size();
     vector<int> rois_shape={region_num, 5};
     Blob<float>* rois_blob = new Blob<float>(rois_shape); //may cause memory leak
     float* rois_blob_cpu_data = rois_blob->mutable_cpu_data();
     for(int i=0;i<regions.size();i++){
         int index = 5*i;
+        const Rect &region = regions[i];
+        int x1 = region.x, y1 = region.y;
+        int w = region.width, h = region.height;
+        int x2 = x1 + w - 1, y2 = y1 + h - 1;
         rois_blob_cpu_data[index] = 0;
-        rois_blob_cpu_data[index+1] = regions[i][0];
-        rois_blob_cpu_data[index+2] = regions[i][1];
-        rois_blob_cpu_data[index+3] = regions[i][2];
-        rois_blob_cpu_data[index+4] = regions[i][3];
+        rois_blob_cpu_data[index+1] = x1;
+        rois_blob_cpu_data[index+2] = y1;
+        rois_blob_cpu_data[index+3] = x2;
+        rois_blob_cpu_data[index+4] = y2;
     }
     return rois_blob;
 }

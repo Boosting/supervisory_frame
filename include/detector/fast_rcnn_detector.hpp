@@ -18,7 +18,8 @@ public:
     vector<Target> detectTargets(const Mat &image);
 protected:
     BackgroundSubstractionMotionDetector motion_detector;
-    Blob<float>* createRoisBlob(const vector<vector<float> > &regions);
+    vector<Rect> getRegionProposals(const Mat &image);
+    Blob<float>* createRoisBlob(const vector<Rect> &regions);
 };
 
 #endif //SUPERVISORY_FRAME_FAST_RCNN_DETECTOR_HPP
