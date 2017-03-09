@@ -62,8 +62,7 @@ vector<vector<Rect> > CaffeDetector::bbox_transform(const vector<Rect> &rois, co
         float x2 = x1 + width - 1, y2 = y1 + height - 1;
         float center_x = x1 + width * 0.5, center_y = y1 + height * 0.5;
         for (int j = 0; j < cls_num; j++) {
-            int offset = j * cls_num;
-            float dx = bbox_pred[i][offset], dy = bbox_pred[i][offset+1], dw = bbox_pred[i][offset+2], dh = bbox_pred[i][offset+3];
+            float dx = bbox_pred[i][j*4], dy = bbox_pred[i][j*4+1], dw = bbox_pred[i][j*4+2], dh = bbox_pred[i][j*4+3];
             float pred_width = width * exp(dw), pred_height = height * exp(dh);
             float pred_center_x = dx * width + center_x, pred_center_y = dy * height + center_y;
             int pred_x1 = pred_center_x - pred_width * 0.5, pred_x2 = pred_center_x + pred_width * 0.5;
