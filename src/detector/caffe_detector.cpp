@@ -50,15 +50,17 @@ vector<vector<float> > CaffeDetector::getOutputData(string blob_name)
     return output_data;
 }
 
-vector<vector<Rect> > CaffeDetector::bbox_transform(const vector<vector<float> > &rois, const vector<vector<float> > &bbox_pred, const Mat& image){
+vector<vector<Rect> > CaffeDetector::bbox_transform(const vector<Rect> &rois, const vector<vector<float> > &bbox_pred, const Mat& image){
     if(rois.empty()) return vector<vector<Rect> >();
     int image_height = image.rows, image_width = image.cols;
     int cls_num = bbox_pred[0].size();
     int roi_num = rois.size();
     vector<vector<Rect> > bbox(roi_num, vector<Rect>(cls_num));
     for(int i=0;i<roi_num;i++) {
-        float x1 = rois[i][0], y1 = rois[i][1], x2 = rois[i][2], y2 = rois[i][3];
-        float width = x2 - x1 + 1, height = y2 - y1 + 1, center_x = x1 + width * 0.5, center_y = y1 + height * 0.5;
+        float x1 = rois[i].x, y1 = rois[i].y;
+        float width = rois[i].width, height = rois[i].height;
+        float x2 = x1 + width - 1, y2 = y1 + height - 1;
+        float center_x = x1 + width * 0.5, center_y = y1 + height * 0.5;
         for (int j = 0; j < cls_num; j++) {
             int offset = j * cls_num;
             float dx = bbox_pred[i][offset], dy = bbox_pred[i][offset+1], dw = bbox_pred[i][offset+2], dh = bbox_pred[i][offset+3];
