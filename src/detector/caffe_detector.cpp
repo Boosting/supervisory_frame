@@ -53,7 +53,7 @@ vector<vector<float> > CaffeDetector::getOutputData(string blob_name)
 vector<vector<Rect> > CaffeDetector::bbox_transform(const vector<Rect> &rois, const vector<vector<float> > &bbox_pred, const Mat& image){
     if(rois.empty()) return vector<vector<Rect> >();
     int image_height = image.rows, image_width = image.cols;
-    int cls_num = bbox_pred[0].size();
+    int cls_num = bbox_pred[0].size() / 4; // each rois predict cls_num * 4 bbox, (dx, dy, dw, dh)
     int roi_num = rois.size();
     vector<vector<Rect> > bbox(roi_num, vector<Rect>(cls_num));
     for(int i=0;i<roi_num;i++) {
