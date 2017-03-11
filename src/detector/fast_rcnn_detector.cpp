@@ -3,6 +3,7 @@
 //
 
 #include "detector/fast_rcnn_detector.hpp"
+#include "utils/selective_search.hpp"
 
 FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& trained_file, bool useGPU)
         :CaffeDetector(model_file, trained_file, useGPU) {
@@ -45,8 +46,21 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
 }
 
 vector<Rect> FastRcnnDetector::getRegionProposals(const Mat &image) {
-    vector<Rect> regions = motion_detector.detect(image);
-    return regions;
+    vector<Rect> region_proposals;
+    vector<Rect> moving_regions = motion_detector.detect(image);
+    for(Rect &r1: moving_regions){
+        Mat partImage;
+        int x1 = r1.x, y1 = r1.y;
+        int w1 = r1.width, h1 = r1.height;
+        int center_x = x1 + w1 / 2, center_y = y1 + h1 / 2;
+        getRectSubPix(image, {w1, h1}, {center_x, center_y}, partImage);
+        vector<Rect> regions = region_proposal::selectiveSearch(partImage, 500, 0.8, 50, 1000, 100000, 2.5 );
+        for(Rect &r2: regions){
+            int x2 = x1 + r2.x, y2 = y1 + r2.y;
+            region_proposals.push_back({x2, y2, r2.width, r2.height});
+        }
+    }
+    return region_proposals;
 }
 
 Blob<float>* FastRcnnDetector::createRoisBlob(const vector<Rect> &regions){
