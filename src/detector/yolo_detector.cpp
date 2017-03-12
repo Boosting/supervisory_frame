@@ -22,11 +22,11 @@ YoloDetector::YoloDetector(bool useGPU) {
 	gpu_index = -1;
 #endif
     idToClass = {
-            Target::UNKNOWN, Target::PERSON, Target::BICYCLE, Target::CAR,
-            Target::MOTORBIKE, Target::UNKNOWN, Target::BUS, Target::TRAIN,
-            Target::TRUCK, Target::UNKNOWN, Target::TRAFFIC_LIGHT, Target::FIRE_HYDRANT,
-            Target::STOP_SIGN
-    };
+            Target::PERSON,     Target::BICYCLE,        Target::CAR,            Target::MOTORBIKE,
+            Target::UNKNOWN,    Target::BUS,            Target::TRAIN,          Target::TRUCK,
+            Target::UNKNOWN,    Target::TRAFFIC_LIGHT,  Target::FIRE_HYDRANT,   Target::STOP_SIGN
+    }; // MSCOCO 80 classes
+    for(int i=12;i<80;i++) idToClass.push_back(Target::UNKNOWN);
     darknet_network = parse_network_cfg(cfgfile);
     load_weights(&darknet_network, weightfile);
 	set_batch_network(&darknet_network, 1);
@@ -83,7 +83,7 @@ vector<Target> YoloDetector::get_detections(const image &im, int num, float thre
 }
 
 vector<Target> YoloDetector::kitti_detect(const image &im, const network &net){
-    float thresh = 0.24, nms = 0.4, hier_thresh = 0.5;
+    float thresh = 0.1, nms = 0.4, hier_thresh = 0.5;
     int width = net.w, height = net.h;
     layer l = net.layers[net.n-1];
 	int output_num = l.w*l.h*l.n;
