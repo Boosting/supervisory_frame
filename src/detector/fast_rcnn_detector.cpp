@@ -19,27 +19,43 @@ FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& train
 }
 
 vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
-    Blob<float>* image_blob = createImageBlob(image);
     vector<Rect> regions = getRegionProposals(image);
     if(regions.empty()) return vector<Target>();
     int region_num = regions.size();
-    Blob<float>* rois = createRoisBlob(regions);
-    vector<Blob<float>* > bottom = {image_blob, rois};
+    int batch_size = 20;
+
+    Blob<float>* image_blob = createImageBlob(image);
     float type = 0.0;
-    vector<int> image_shape = {1, 3, image.rows, image.cols};
-    vector<int> rois_shape = {region_num, 5};
-    net->input_blobs()[0]->Reshape(image_shape);
-    net->input_blobs()[1]->Reshape(rois_shape);
+    net->input_blobs()[0]->Reshape({1, 3, image.rows, image.cols});
+    net->input_blobs()[1]->Reshape({batch_size, 5});
     net->Reshape();
 
+    vector<vector<float> > cls_prob(region_num);
+    vector<vector<float> > bbox_pred(region_num);
     clock_t time1, time2;
     time1 = clock();
-    net->Forward(bottom, &type);
+    for(int i=0;i<regions.size();i+=batch_size) {
+        int sp = i, ep;
+        if(sp+batch_size>regions.size()){
+            ep = regions.size()-1;
+            net->input_blobs()[1]->Reshape({ep - sp + 1, 5});
+            net->Reshape();
+        } else{
+            ep = sp+batch_size-1;
+        }
+        Blob<float>* rois = createRoisBlob(regions, sp, ep);
+        vector<Blob<float>* > bottom = {image_blob, rois};
+        net->Forward(bottom, &type);
+        vector<vector<float> > part_cls_prob = getOutputData("cls_prob");
+        vector<vector<float> > part_bbox_pred = getOutputData("bbox_pred");
+        for(int j=sp;j<=ep;j++){
+            cls_prob[j] = part_cls_prob[j-sp];
+            bbox_pred[j] = part_bbox_pred[j-sp];
+        }
+    }
     time2 = clock();
     cout<<"forward use time: "<< (double)(time2 - time1) / CLOCKS_PER_SEC <<endl;
 
-    vector<vector<float> > cls_prob = getOutputData("cls_prob");
-    vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
     vector<vector<Rect> > bbox = bbox_transform(regions, bbox_pred, image);
     vector<Target> targets = nms(bbox, cls_prob, 0.7, 0.01);
 
@@ -70,13 +86,12 @@ vector<Rect> FastRcnnDetector::getRegionProposals(const Mat &image) {
     return region_proposals;
 }
 
-Blob<float>* FastRcnnDetector::createRoisBlob(const vector<Rect> &regions){
-    int region_num = regions.size();
-    vector<int> rois_shape={region_num, 5};
+Blob<float>* FastRcnnDetector::createRoisBlob(const vector<Rect> &regions, int sp, int ep){
+    vector<int> rois_shape={ep - sp + 1, 5};
     Blob<float>* rois_blob = new Blob<float>(rois_shape); //may cause memory leak
     float* rois_blob_cpu_data = rois_blob->mutable_cpu_data();
-    for(int i=0;i<regions.size();i++){
-        int index = 5*i;
+    for(int i=sp;i<=ep;i++){
+        int index = 5 * (i - sp);
         const Rect &region = regions[i];
         int x1 = region.x, y1 = region.y;
         int w = region.width, h = region.height;
