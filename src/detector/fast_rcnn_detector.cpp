@@ -51,6 +51,7 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
 }
 
 vector<Rect> FastRcnnDetector::getRegionProposals(const Mat &image) {
+    int image_width = image.cols, image_height = image.rows;
     vector<Rect> region_proposals = preRegions;
     vector<Rect> moving_regions = motion_detector.detect(image);
     for(Rect &r1: moving_regions){
@@ -61,8 +62,9 @@ vector<Rect> FastRcnnDetector::getRegionProposals(const Mat &image) {
         getRectSubPix(image, {w1, h1}, {center_x, center_y}, partImage);
         vector<Rect> regions = region_proposal::selectiveSearch(partImage, 500, 0.8, 50, 1000, 100000, 2.5 );
         for(Rect &r2: regions){
-            int x2 = x1 + r2.x, y2 = y1 + r2.y;
-            region_proposals.push_back({x2, y2, r2.width, r2.height});
+            int x2 = min(x1 + r2.x, image_width-1), y2 = min(y1 + r2.y, image_height-1);
+            int w2 = min(r2.width, image_width - x2), h2 = min(r2.height, image_height - y2);
+            region_proposals.push_back({x2, y2, w2, h2});
         }
     }
     return region_proposals;
