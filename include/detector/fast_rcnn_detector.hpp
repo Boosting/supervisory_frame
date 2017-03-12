@@ -20,7 +20,7 @@ protected:
     vector<Rect> preRegions;
     BackgroundSubstractionMotionDetector motion_detector;
     vector<Rect> getRegionProposals(const Mat &image);
-    Blob<float>* createRoisBlob(const vector<Rect> &regions);
+    Blob<float>* createRoisBlob(const vector<Rect> &regions, int sp, int ep);
 };
 
 #endif //SUPERVISORY_FRAME_FAST_RCNN_DETECTOR_HPP
