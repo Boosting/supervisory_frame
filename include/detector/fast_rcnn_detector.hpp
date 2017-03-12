@@ -17,6 +17,7 @@ public:
     FastRcnnDetector(const string& model_file, const string& trained_file, bool useGPU = true);
     vector<Target> detectTargets(const Mat &image);
 protected:
+    vector<Rect> preRegions;
     BackgroundSubstractionMotionDetector motion_detector;
     vector<Rect> getRegionProposals(const Mat &image);
     Blob<float>* createRoisBlob(const vector<Rect> &regions);

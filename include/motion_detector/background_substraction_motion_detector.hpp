@@ -12,6 +12,7 @@ public:
     BackgroundSubstractionMotionDetector();
     vector<Rect> detect(const Mat &image);
 protected:
+    bool hasBackground;
     Ptr<BackgroundSubtractorMOG2> mog;
     vector<vector<int> > getForegroundMask(const Mat &image);
     vector<Rect> getRegions(vector<vector<int> > &foregroundMask);

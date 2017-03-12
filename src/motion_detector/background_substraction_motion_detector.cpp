@@ -7,16 +7,23 @@
 
 BackgroundSubstractionMotionDetector::BackgroundSubstractionMotionDetector(){
     mog = createBackgroundSubtractorMOG2(20, 16, true);
+    hasBackground = false;
 }
 
 vector<Rect> BackgroundSubstractionMotionDetector::detect(const Mat &image){
+    vector<Rect> regions;
     Mat gaussianImage, foreground;
     GaussianBlur(image, gaussianImage, {5, 5}, 2);
     mog->apply(gaussianImage, foreground, 0.001);
+    if(!hasBackground){
+        regions.push_back({0, 0, image.cols, image.rows});
+        hasBackground = true;
+        return regions;
+    }
     erode(foreground, foreground, cv::Mat());
     dilate(foreground, foreground, cv::Mat());
     vector<vector<int> > foregroundMask = getForegroundMask(foreground);
-    vector<Rect> regions = getRegions(foregroundMask);
+    regions = getRegions(foregroundMask);
     return regions;
 }
 vector<vector<int> > BackgroundSubstractionMotionDetector::getForegroundMask(const Mat &image){

@@ -42,11 +42,16 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
     vector<vector<Rect> > bbox = bbox_transform(regions, bbox_pred, image);
     vector<Target> targets = nms(bbox, cls_prob, 0.7, 0.01);
+
+    preRegions = vector<Rect>(targets.size());
+    for(int i=0;i<targets.size();i++){
+        preRegions[i] = targets[i].getRegion();
+    }
     return targets;
 }
 
 vector<Rect> FastRcnnDetector::getRegionProposals(const Mat &image) {
-    vector<Rect> region_proposals;
+    vector<Rect> region_proposals = preRegions;
     vector<Rect> moving_regions = motion_detector.detect(image);
     for(Rect &r1: moving_regions){
         Mat partImage;
