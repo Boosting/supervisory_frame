@@ -5,6 +5,7 @@
 #include <opencv/cv.hpp>
 #include "motion_detector/background_substraction_motion_detector.hpp"
 #include "utils/selective_search.hpp"
+#include "utils/opencv_util.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -28,22 +29,30 @@ int main() {
     int frame_id = 0, prev_frame_id = -1;
     string image_name;
     int bbox_num;
+
+    int frameNum = 0;
+    int proposalNum = 0;
+    int groundTrueNum = 0;
+    vector<int> proposalNumArr(100, 0); // 0, 0.05, 0.10 ... 0.95
     while (in >> image_name) {
+        frameNum++;
         vector<Rect> groundTrue;
         vector<Rect> proposals;
         vector<Rect> regions;
         in >> bbox_num;
+        groundTrueNum += bbox_num;
         for(int i=0;i<bbox_num;i++){
             int x, y, w, h;
             in>>x>>y>>w>>h;
             groundTrue.push_back({x, y, w, h});
         }
         frame_id = getFrameId(image_name);
+        cout<<frame_id<<endl;
         for (int i = prev_frame_id + 1; i <= frame_id; i++) {
             cap >> image;
             regions = motion_detector.detect(image);
         }
-        int proposal_num = 0;
+
         for (Rect &region: regions) {
             if(region.area()<1000){
                 proposals.push_back(region);
@@ -61,6 +70,24 @@ int main() {
                 proposals.push_back(globalProposal);
             }
         }
+        for(Rect &trueRegion: groundTrue){
+            vector<bool> hasOverlap(100, false);
+            for(Rect &proposal: proposals){
+                proposal = {proposal.x*2, proposal.y*2, proposal.width*2, proposal.height*2};
+                double overlapRate = OpencvUtil::getOverlapRate(trueRegion, proposal);
+                double rate = 0.0;
+                for(int i=0;i<100;i++){
+                    if(rate>overlapRate) break;
+                    hasOverlap[i] = true;
+                    rate+=0.01;
+                }
+            }
+            for(int i=0;i<hasOverlap.size();i++) {
+                if(hasOverlap[i]) proposalNumArr[i]++;
+            }
+        }
+
+        proposalNum += proposals.size();
 //        for (Rect &proposal: proposals) {
 //            rectangle(image, proposal, Scalar(255, 0, 0), 1, 1);
 //        }
@@ -68,6 +95,18 @@ int main() {
 //        waitKey(10);
         prev_frame_id = frame_id;
     }
+    out<<"frame num: "<<endl;
+    out<<frameNum<<endl;
+    out<<"ground truth num: "<<endl;
+    out<<groundTrueNum<<endl;
+    out<<"proposal num: "<<endl;
+    out<<proposalNum<<endl;
+    out<<"proposal overlap: "<<endl;
+    for(int i=0;i<proposalNumArr.size();i++){
+        out<<proposalNumArr[i]<<" ";
+    }
+    out<<endl;
     in.close();
     out.close();
+    return 0;
 }
