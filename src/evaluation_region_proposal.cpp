@@ -73,8 +73,8 @@ int main() {
         for(Rect &trueRegion: groundTrue){
             vector<bool> hasOverlap(100, false);
             for(Rect &proposal: proposals){
-                proposal = {proposal.x*2, proposal.y*2, proposal.width*2, proposal.height*2};
-                double overlapRate = OpencvUtil::getOverlapRate(trueRegion, proposal);
+                Rect tmpProposal = {proposal.x*2, proposal.y*2, proposal.width*2, proposal.height*2};
+                double overlapRate = OpencvUtil::getOverlapRate(trueRegion, tmpProposal);
                 double rate = 0.0;
                 for(int i=0;i<100;i++){
                     if(rate>overlapRate) break;
