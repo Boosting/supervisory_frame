@@ -16,6 +16,18 @@ int getFrameId(string &image_name){
     int frameId = atoi(idStr.c_str());
     return frameId;
 }
+double getGroundTruthOverlapRate(Rect groundTruth, Rect proposal){
+    if(groundTruth.area()<=0||proposal.area()<=0) return 0;
+    double overlapRate=0;
+    int x1=max(groundTruth.x, proposal.x), y1=max(groundTruth.y, proposal.y);
+    int x2=min(groundTruth.x+groundTruth.width, proposal.x+proposal.width);
+    int y2=min(groundTruth.y+groundTruth.height, proposal.y+proposal.height);
+    if(x2>=x1 && y2>=y1) {
+        double overlapArea = (x2 - x1) * (y2 - y1);
+        overlapRate = overlapArea / groundTruth.area();
+    }
+    return overlapRate;
+}
 int main() {
     string address = "/home/dujiajun/CUHKSquare.mpg";
     string bbox_file_address = "/home/dujiajun/CUHK/train_bbox.txt";
@@ -34,6 +46,7 @@ int main() {
     int proposalNum = 0;
     int groundTrueNum = 0;
     vector<int> proposalNumArr(100, 0); // 0, 0.05, 0.10 ... 0.95
+    vector<int> proposalVec2(100, 0); // 0, 0.05, 0.10 ... 0.95
     while (in >> image_name) {
         frameNum++;
         vector<Rect> groundTrue;
@@ -72,6 +85,7 @@ int main() {
         }
         for(Rect &trueRegion: groundTrue){
             vector<bool> hasOverlap(100, false);
+            vector<bool> hasOverlap2(100, false);
             for(Rect &proposal: proposals){
                 Rect tmpProposal = {proposal.x*2, proposal.y*2, proposal.width*2, proposal.height*2};
                 double overlapRate = OpencvUtil::getOverlapRate(trueRegion, tmpProposal);
@@ -81,9 +95,20 @@ int main() {
                     hasOverlap[i] = true;
                     rate+=0.01;
                 }
+
+                double overlapRate2 = getGroundTruthOverlapRate(trueRegion, tmpProposal);
+                rate = 0.0;
+                for(int i=0;i<100;i++){
+                    if(rate>overlapRate2) break;
+                    hasOverlap2[i] = true;
+                    rate+=0.01;
+                }
             }
             for(int i=0;i<hasOverlap.size();i++) {
                 if(hasOverlap[i]) proposalNumArr[i]++;
+            }
+            for(int i=0;i<hasOverlap2.size();i++){
+                if(hasOverlap2[i]) proposalVec2[i]++;
             }
         }
 
@@ -104,6 +129,11 @@ int main() {
     out<<"proposal overlap: "<<endl;
     for(int i=0;i<proposalNumArr.size();i++){
         out<<proposalNumArr[i]<<" ";
+    }
+    out<<endl;
+    out<<"ground truth overlap: "<<endl;
+    for(int i=0;i<proposalVec2.size();i++){
+        out<<proposalVec2[i]<<" ";
     }
     out<<endl;
     in.close();
