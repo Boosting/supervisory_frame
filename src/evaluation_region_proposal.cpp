@@ -45,8 +45,8 @@ int main() {
     int frameNum = 0;
     int proposalNum = 0;
     int groundTrueNum = 0;
-    vector<int> proposalNumArr(100, 0); // 0, 0.05, 0.10 ... 0.95
-    vector<int> proposalVec2(100, 0); // 0, 0.05, 0.10 ... 0.95
+    vector<int> proposalNumArr(101, 0); // 0, 0.05, 0.10 ... 0.95
+    vector<int> proposalVec2(101, 0); // 0, 0.05, 0.10 ... 0.95
     while (in >> image_name) {
         frameNum++;
         vector<Rect> groundTrue;
@@ -84,13 +84,13 @@ int main() {
             }
         }
         for(Rect &trueRegion: groundTrue){
-            vector<bool> hasOverlap(100, false);
-            vector<bool> hasOverlap2(100, false);
+            vector<bool> hasOverlap(101, false);
+            vector<bool> hasOverlap2(101, false);
             for(Rect &proposal: proposals){
                 Rect tmpProposal = {proposal.x*2, proposal.y*2, proposal.width*2, proposal.height*2};
                 double overlapRate = OpencvUtil::getOverlapRate(trueRegion, tmpProposal);
                 double rate = 0.0;
-                for(int i=0;i<100;i++){
+                for(int i=0;i<=100;i++){
                     if(rate>overlapRate) break;
                     hasOverlap[i] = true;
                     rate+=0.01;
@@ -98,7 +98,7 @@ int main() {
 
                 double overlapRate2 = getGroundTruthOverlapRate(trueRegion, tmpProposal);
                 rate = 0.0;
-                for(int i=0;i<100;i++){
+                for(int i=0;i<=100;i++){
                     if(rate>overlapRate2) break;
                     hasOverlap2[i] = true;
                     rate+=0.01;
