@@ -16,18 +16,7 @@ int getFrameId(string &image_name){
     int frameId = atoi(idStr.c_str());
     return frameId;
 }
-double getGroundTruthOverlapRate(Rect groundTruth, Rect proposal){
-    if(groundTruth.area()<=0||proposal.area()<=0) return 0;
-    double overlapRate=0;
-    int x1=max(groundTruth.x, proposal.x), y1=max(groundTruth.y, proposal.y);
-    int x2=min(groundTruth.x+groundTruth.width, proposal.x+proposal.width);
-    int y2=min(groundTruth.y+groundTruth.height, proposal.y+proposal.height);
-    if(x2>=x1 && y2>=y1) {
-        double overlapArea = (x2 - x1) * (y2 - y1);
-        overlapRate = overlapArea / groundTruth.area();
-    }
-    return overlapRate;
-}
+
 int main() {
     string address = "/home/dujiajun/CUHKSquare.mpg";
     string bbox_file_address = "/home/dujiajun/CUHK/train_bbox.txt";
@@ -45,12 +34,13 @@ int main() {
     int frameNum = 0;
     int proposalNum = 0;
     int groundTrueNum = 0;
-    vector<int> proposalNumArr(101, 0); // 0, 0.05, 0.10 ... 0.95
-    vector<int> proposalVec2(101, 0); // 0, 0.05, 0.10 ... 0.95
+    vector<int> iou_vec1(101, 0); // 0, 0.05, 0.10 ... 0.95, 1.00
+    vector<int> iou_vec2(101, 0); // 0, 0.05, 0.10 ... 0.95, 1.00
     while (in >> image_name) {
         frameNum++;
         vector<Rect> groundTrue;
-        vector<Rect> proposals;
+        vector<Rect> proposals1;
+        vector<Rect> proposals2;
         vector<Rect> regions;
         in >> bbox_num;
         groundTrueNum += bbox_num;
@@ -67,8 +57,9 @@ int main() {
         }
 
         for (Rect &region: regions) {
+            proposals1.push_back(region);
+            proposals2.push_back(region);
             if(region.area()<1000){
-                proposals.push_back(region);
                 continue;
             }
             Mat partImage;
@@ -80,44 +71,55 @@ int main() {
             for (Rect &partProposal: partProposals) {
                 int x = x1 + partProposal.x, y = y1 + partProposal.y;
                 Rect globalProposal(x, y, partProposal.width, partProposal.height);
-                proposals.push_back(globalProposal);
+                proposals1.push_back(globalProposal);
             }
         }
-        for(Rect &trueRegion: groundTrue){
-            vector<bool> hasOverlap(101, false);
-            vector<bool> hasOverlap2(101, false);
-            for(Rect &proposal: proposals){
-                Rect tmpProposal = {proposal.x*2, proposal.y*2, proposal.width*2, proposal.height*2};
-                double overlapRate = OpencvUtil::getOverlapRate(trueRegion, tmpProposal);
-                double rate = 0.0;
-                for(int i=0;i<=100;i++){
-                    if(rate>overlapRate) break;
-                    hasOverlap[i] = true;
-                    rate+=0.01;
-                }
-
-                double overlapRate2 = getGroundTruthOverlapRate(trueRegion, tmpProposal);
-                rate = 0.0;
-                for(int i=0;i<=100;i++){
-                    if(rate>overlapRate2) break;
-                    hasOverlap2[i] = true;
-                    rate+=0.01;
+        vector<float> overlapVec1(groundTrue.size(), 0);
+        vector<float> overlapVec2(groundTrue.size(), 0);
+        for(Rect proposal: proposals1){
+            proposal = {proposal.x*2, proposal.y*2, proposal.width*2, proposal.height*2};
+            float max_overlap_rate = 0;
+            int index = -1;
+            for(int i=0;i<groundTrue.size();i++){
+                Rect &trueRegion = groundTrue[i];
+                double overlapRate = OpencvUtil::getOverlapRate(trueRegion, proposal);
+                if(overlapRate>max_overlap_rate){
+                    index = i;
+                    max_overlap_rate = overlapRate;
                 }
             }
-            for(int i=0;i<hasOverlap.size();i++) {
-                if(hasOverlap[i]) proposalNumArr[i]++;
+            if(index!=-1){
+                overlapVec1[index] = max(max_overlap_rate, overlapVec1[index]);
             }
-            for(int i=0;i<hasOverlap2.size();i++){
-                if(hasOverlap2[i]) proposalVec2[i]++;
+        }
+        for(float prob: overlapVec1){
+            for(int i=0;i<min(int(prob*100-0.000001+1), 101);i++){
+                iou_vec1[i]++;
+            }
+        }
+        for(Rect proposal: proposals2){
+            proposal = {proposal.x*2, proposal.y*2, proposal.width*2, proposal.height*2};
+            float max_overlap_rate = 0;
+            int index = -1;
+            for(int i=0;i<groundTrue.size();i++){
+                Rect &trueRegion = groundTrue[i];
+                double overlapRate = OpencvUtil::getOverlapRate(trueRegion, proposal);
+                if(overlapRate>max_overlap_rate){
+                    index = i;
+                    max_overlap_rate = overlapRate;
+                }
+            }
+            if(index!=-1){
+                overlapVec2[index] = max(max_overlap_rate, overlapVec2[index]);
+            }
+        }
+        for(float prob: overlapVec2){
+            for(int i=0;i<min(int(prob*100-0.000001+1), 101);i++){
+                iou_vec2[i]++;
             }
         }
 
-        proposalNum += proposals.size();
-//        for (Rect &proposal: proposals) {
-//            rectangle(image, proposal, Scalar(255, 0, 0), 1, 1);
-//        }
-//        imshow("proposal", image);
-//        waitKey(10);
+
         prev_frame_id = frame_id;
     }
     out<<"frame num: "<<endl;
@@ -126,14 +128,14 @@ int main() {
     out<<groundTrueNum<<endl;
     out<<"proposal num: "<<endl;
     out<<proposalNum<<endl;
-    out<<"proposal overlap: "<<endl;
-    for(int i=0;i<proposalNumArr.size();i++){
-        out<<proposalNumArr[i]<<" ";
+    out<<"proposal overlap1: "<<endl;
+    for(int i=0;i<iou_vec1.size();i++){
+        out<<iou_vec1[i]<<" ";
     }
     out<<endl;
-    out<<"ground truth overlap: "<<endl;
-    for(int i=0;i<proposalVec2.size();i++){
-        out<<proposalVec2[i]<<" ";
+    out<<"proposal overlap2: "<<endl;
+    for(int i=0;i<iou_vec2.size();i++){
+        out<<iou_vec2[i]<<" ";
     }
     out<<endl;
     in.close();
