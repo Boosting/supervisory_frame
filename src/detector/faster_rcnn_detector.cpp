@@ -54,8 +54,8 @@ Blob<float>* FasterRcnnDetector::createImInfoBlob(const Mat& image){
 vector<Rect> FasterRcnnDetector::getRegions(vector<vector<float> > &rois){
     vector<Rect> regions(rois.size());
     for(int i=0;i<rois.size();i++){
-        int x = rois[i][1], y = rois[i][2], w = rois[i][3], h = rois[i][4];
-        regions[i] = {x, y, w, h};
+        int x1 = rois[i][1], y1 = rois[i][2], x2 = rois[i][3], y2 = rois[i][4];
+        regions[i] = {x1, y1, x2-x1+1, y2-y1+1};
     }
     return regions;
 }
