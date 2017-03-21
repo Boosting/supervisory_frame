@@ -2,8 +2,8 @@
 // Created by dujiajun on 2/10/17.
 //
 #include "detector/faster_rcnn_detector.hpp"
-FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& trained_file, bool useGPU)
-        :CaffeDetector(model_file, trained_file, useGPU) {
+FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& trained_file, int gpu_id)
+        :CaffeDetector(model_file, trained_file, gpu_id) {
     // VOC 1+20 classes
     idToClass = {
             Target::UNKNOWN,

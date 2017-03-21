@@ -4,10 +4,10 @@
 
 #include "detector/caffe_detector.hpp"
 
-CaffeDetector::CaffeDetector(const string& model_file, const string& trained_file, bool useGPU):MultiTargetDetector() {
-    if (useGPU) {
+CaffeDetector::CaffeDetector(const string& model_file, const string& trained_file, int gpu_id):MultiTargetDetector() {
+    if (gpu_id>=0) {
         Caffe::set_mode(Caffe::GPU);
-        Caffe::SetDevice(2); //may implement detecting gpu id automatically later
+        Caffe::SetDevice(gpu_id); //may implement detecting gpu id automatically later
     } else Caffe::set_mode(Caffe::CPU);
 
     /* Load the network. */

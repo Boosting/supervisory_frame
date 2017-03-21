@@ -9,7 +9,7 @@
 
 class FasterRcnnDetector: public CaffeDetector {
 public:
-    FasterRcnnDetector(const string& model_file, const string& trained_file, bool useGPU = true);
+    FasterRcnnDetector(const string& model_file, const string& trained_file, int gpu_id = 2);
     vector<Target> detectTargets(const Mat& image);
 protected:
     Blob<float>* createImInfoBlob(const Mat& image);
