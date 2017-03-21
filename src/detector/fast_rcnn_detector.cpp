@@ -12,7 +12,8 @@ FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& train
     // VOC 1+20 classes
     idToClass = {
             Target::UNKNOWN,
-            Target::UNKNOWN, Target::BICYCLE, Target::UNKNOWN, Target::UNKNOWN,
+//            Target::UNKNOWN, Target::BICYCLE, Target::UNKNOWN, Target::UNKNOWN,
+            Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, //bicycle is easy to confuse with person
             Target::UNKNOWN, Target::BUS, Target::CAR, Target::UNKNOWN,
             Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN,
             Target::UNKNOWN, Target::MOTORBIKE, Target::PERSON, Target::UNKNOWN,
