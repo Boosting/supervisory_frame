@@ -8,8 +8,8 @@
 
 int main(){
     string address="/home/dujiajun/CUHKSquare.mpg";
-    string prototxt = "/home/dujiajun/fast-rcnn/models/VGG16/test.prototxt";
-    string trained_model = "/home/dujiajun/fast-rcnn/data/fast_rcnn_models/vgg16_fast_rcnn_iter_40000.caffemodel";
+    string prototxt = "/home/dujiajun/py-faster-rcnn/models/pascal_voc/VGG16/faster_rcnn_end2end/test.prototxt";
+    string trained_model = "/home/dujiajun/py-faster-rcnn/data/faster_rcnn_models/VGG16_faster_rcnn_final.caffemodel";
     FasterRcnnDetector detector(prototxt, trained_model);
     DetectorOnlyFusion fusion(detector);
     Displayer displayer;
