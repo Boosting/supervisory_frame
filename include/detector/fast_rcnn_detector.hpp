@@ -7,6 +7,7 @@
 
 #include "detector/caffe_detector.hpp"
 #include "motion_detector/background_substraction_motion_detector.hpp"
+#include "detector/faster_rcnn_detector.hpp"
 
 /**
  * This FastRcnnDetector doesn't use region proposal,
@@ -14,11 +15,13 @@
  */
 class FastRcnnDetector: public CaffeDetector {
 public:
-    FastRcnnDetector(const string& model_file, const string& trained_file, bool useGPU = true);
+    FastRcnnDetector(FasterRcnnDetector &fasterRcnnDetector, const string& model_file, const string& trained_file, bool useGPU = true);
     vector<Target> detectTargets(const Mat &image);
 protected:
     vector<Rect> preRegions;
     BackgroundSubstractionMotionDetector motion_detector;
+    FasterRcnnDetector &fasterRcnnDetector;
+    bool useFasterRcnn;
     vector<Rect> getRegionProposals(const Mat &image);
     Blob<float>* createRoisBlob(const vector<Rect> &regions, int sp, int ep);
 };

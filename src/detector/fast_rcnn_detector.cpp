@@ -5,8 +5,8 @@
 #include "detector/fast_rcnn_detector.hpp"
 #include "utils/selective_search.hpp"
 
-FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& trained_file, bool useGPU)
-        :CaffeDetector(model_file, trained_file, useGPU) {
+FastRcnnDetector::FastRcnnDetector(FasterRcnnDetector &fdetector, const string& model_file, const string& trained_file, bool useGPU)
+        :CaffeDetector(model_file, trained_file, useGPU), fasterRcnnDetector(fdetector) {
     // VOC 1+20 classes
     idToClass = {
             Target::UNKNOWN,
@@ -16,10 +16,15 @@ FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& train
             Target::UNKNOWN, Target::MOTORBIKE, Target::PERSON, Target::UNKNOWN,
             Target::UNKNOWN, Target::UNKNOWN, Target::TRAIN, Target::UNKNOWN
     };
+    useFasterRcnn = true;
 }
 
 vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     vector<Rect> regions = getRegionProposals(image);
+    if(useFasterRcnn){
+        useFasterRcnn = false;
+        return fasterRcnnDetector.detectTargets(image);
+    }
     if(regions.empty()) return vector<Target>();
     int region_num = regions.size();
     int batch_size = 4;
