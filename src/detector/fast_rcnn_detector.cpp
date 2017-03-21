@@ -5,7 +5,8 @@
 #include "detector/fast_rcnn_detector.hpp"
 #include "utils/selective_search.hpp"
 
-FastRcnnDetector::FastRcnnDetector(FasterRcnnDetector &fdetector, const string& model_file, const string& trained_file, int gpu_id)
+//FastRcnnDetector::FastRcnnDetector(FasterRcnnDetector &fdetector, const string& model_file, const string& trained_file, int gpu_id)
+FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& trained_file, int gpu_id)
 //        :CaffeDetector(model_file, trained_file, gpu_id), fasterRcnnDetector(fdetector) {
         :CaffeDetector(model_file, trained_file, gpu_id){
     // VOC 1+20 classes
