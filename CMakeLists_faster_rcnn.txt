@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_compile_options(-std=c++11)
 
-set(CAFFE_PATH /home/dujiajun/fast-rcnn/caffe-fast-rcnn)
+set(CAFFE_PATH /home/dujiajun/py-faster-rcnn/caffe-fast-rcnn)
 set(HDF5_PATH /usr/include/hdf5/serial/)
 set(CUDA_PATH /usr/local/cuda)
 
@@ -22,14 +22,13 @@ link_directories(${CUDA_PATH}/lib64)
 
 aux_source_directory(src/opencv2 OPENCV_TRACKING_SOURCE_FILES)
 
-add_executable(test_fast_rcnn_detector
-        src/test_fast_rcnn_detector.cpp
+add_executable(test_faster_rcnn_detector
+        src/test_faster_rcnn_detector.cpp
         src/real_time_monitor.cpp
         src/displayer.cpp
         src/fusion/detector_only_fusion.cpp
-        src/detector/fast_rcnn_detector.cpp
+        src/detector/faster_rcnn_detector.cpp
         src/detector/caffe_detector.cpp
-        src/motion_detector/background_substraction_motion_detector.cpp
         src/target.cpp
         src/utils/opencv_util.cpp)
 
@@ -38,18 +37,18 @@ add_executable(test_fast_rcnn_detector
 # remember that directory like {opencv-3.2.0/build} is created by you for installing OpenCV
 set(OpenCV_DIR /home/dujiajun/opencv-3.2.0/build)
 FIND_PACKAGE(OpenCV REQUIRED)
-TARGET_LINK_LIBRARIES(test_fast_rcnn_detector ${OpenCV_LIBS})
+TARGET_LINK_LIBRARIES(test_faster_rcnn_detector ${OpenCV_LIBS})
 
 find_package(Threads REQUIRED)
 if(THREADS_HAVE_PTHREAD_ARG)
-    set_property(TARGET test_fast_rcnn_detector PROPERTY COMPILE_OPTIONS -pthread)
-    set_property(TARGET test_fast_rcnn_detector PROPERTY INTERFACE_COMPILE_OPTIONS -pthread)
+    set_property(TARGET test_faster_rcnn_detector PROPERTY COMPILE_OPTIONS -pthread)
+    set_property(TARGET test_faster_rcnn_detector PROPERTY INTERFACE_COMPILE_OPTIONS -pthread)
 endif()
 if(CMAKE_THREAD_LIBS_INIT)
-    target_link_libraries(test_fast_rcnn_detector ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(test_faster_rcnn_detector ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
-target_link_libraries(test_fast_rcnn_detector -lopencv_core -lopencv_highgui -lopencv_imgproc)
-target_link_libraries(test_fast_rcnn_detector -lboost_system -lboost_thread -lstdc++)
-target_link_libraries(test_fast_rcnn_detector -lcudart -lcublas -lcurand)
-target_link_libraries(test_fast_rcnn_detector -lcaffe -lglog -lgflags -lprotobuf -lleveldb -lsnappy -llmdb -lhdf5_hl -lhdf5 -lm -lcblas -latlas)
+target_link_libraries(test_faster_rcnn_detector -lopencv_core -lopencv_highgui -lopencv_imgproc)
+target_link_libraries(test_faster_rcnn_detector -lboost_system -lboost_thread -lstdc++)
+target_link_libraries(test_faster_rcnn_detector -lcudart -lcublas -lcurand)
+target_link_libraries(test_faster_rcnn_detector -lcaffe -lglog -lgflags -lprotobuf -lleveldb -lsnappy -llmdb -lhdf5_hl -lhdf5 -lm -lcblas -latlas)
