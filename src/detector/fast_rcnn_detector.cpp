@@ -23,7 +23,11 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     vector<Rect> regions = getRegionProposals(image);
     if(useFasterRcnn){
         useFasterRcnn = false;
-        return fasterRcnnDetector.detectTargets(image);
+        vector<Target> targets = fasterRcnnDetector.detectTargets(image);
+        for(Target &target: targets){
+            preRegions.push_back(target.getRegion());
+        }
+        return targets;
     }
     if(regions.empty()) return vector<Target>();
     int region_num = regions.size();
