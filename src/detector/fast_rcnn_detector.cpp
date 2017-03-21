@@ -6,7 +6,8 @@
 #include "utils/selective_search.hpp"
 
 FastRcnnDetector::FastRcnnDetector(FasterRcnnDetector &fdetector, const string& model_file, const string& trained_file, int gpu_id)
-        :CaffeDetector(model_file, trained_file, gpu_id), fasterRcnnDetector(fdetector) {
+//        :CaffeDetector(model_file, trained_file, gpu_id), fasterRcnnDetector(fdetector) {
+        :CaffeDetector(model_file, trained_file, gpu_id){
     // VOC 1+20 classes
     idToClass = {
             Target::UNKNOWN,
@@ -16,19 +17,19 @@ FastRcnnDetector::FastRcnnDetector(FasterRcnnDetector &fdetector, const string& 
             Target::UNKNOWN, Target::MOTORBIKE, Target::PERSON, Target::UNKNOWN,
             Target::UNKNOWN, Target::UNKNOWN, Target::TRAIN, Target::UNKNOWN
     };
-    useFasterRcnn = true;
+//    useFasterRcnn = true;
 }
 
 vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     vector<Rect> regions = getRegionProposals(image);
-    if(useFasterRcnn){
-        useFasterRcnn = false;
-        vector<Target> targets = fasterRcnnDetector.detectTargets(image);
-        for(Target &target: targets){
-            preRegions.push_back(target.getRegion());
-        }
-        return targets;
-    }
+//    if(useFasterRcnn){
+//        useFasterRcnn = false;
+//        vector<Target> targets = fasterRcnnDetector.detectTargets(image);
+//        for(Target &target: targets){
+//            preRegions.push_back(target.getRegion());
+//        }
+//        return targets;
+//    }
     if(regions.empty()) return vector<Target>();
     int region_num = regions.size();
     int batch_size = 4;
