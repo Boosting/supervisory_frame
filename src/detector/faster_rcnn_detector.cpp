@@ -3,7 +3,17 @@
 //
 #include "detector/faster_rcnn_detector.hpp"
 FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& trained_file, bool useGPU)
-        :CaffeDetector(model_file, trained_file, useGPU) {}
+        :CaffeDetector(model_file, trained_file, useGPU) {
+    // VOC 1+20 classes
+    idToClass = {
+            Target::UNKNOWN,
+            Target::UNKNOWN, Target::BICYCLE, Target::UNKNOWN, Target::UNKNOWN,
+            Target::UNKNOWN, Target::BUS, Target::CAR, Target::UNKNOWN,
+            Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN,
+            Target::UNKNOWN, Target::MOTORBIKE, Target::PERSON, Target::UNKNOWN,
+            Target::UNKNOWN, Target::UNKNOWN, Target::TRAIN, Target::UNKNOWN
+    };
+}
 
 vector<Target> FasterRcnnDetector::detectTargets(const Mat& image) {
     //Only single-image batch implemented, and no image pyramid
@@ -23,14 +33,13 @@ vector<Target> FasterRcnnDetector::detectTargets(const Mat& image) {
     cout<<"forward use time: "<< (double)(time2 - time1) / CLOCKS_PER_SEC <<endl<<endl<<endl;
 
     vector<vector<float> > rois = getOutputData("rois");
+    vector<Rect> regions = getRegions(rois);
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
     vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
 
-    vector<vector<vector<float> > > bbox = bbox_transform(rois, bbox_pred);
-
-    vector<vector<float> > bbox_cls = nms(bbox, cls_prob); //bbox + cls = 4 + 1
-    vector<Target> curTargets = bboxToTarget(bbox_cls);
-    return curTargets;
+    vector<vector<Rect> > bbox = bbox_transform(regions, bbox_pred, image);
+    vector<Target> targets = nms(bbox, cls_prob, 0.5, 0.1);
+    return targets;
 }
 
 Blob<float>* FasterRcnnDetector::createImInfoBlob(const Mat& image){
@@ -40,5 +49,14 @@ Blob<float>* FasterRcnnDetector::createImInfoBlob(const Mat& image){
     float* data = im_info_blob->mutable_cpu_data();
     data[0]=image_height, data[1]=image_width, data[2]=1;
     return im_info_blob;
+}
+
+vector<Rect> FasterRcnnDetector::getRegions(vector<vector<float> > &rois){
+    vector<Rect> regions(rois.size());
+    for(int i=0;i<rois.size();i++){
+        int x = rois[i][1], y = rois[i][2], w = rois[i][3], h = rois[i][4];
+        regions[i] = {x, y, w, h};
+    }
+    return regions;
 }
 

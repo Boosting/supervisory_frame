@@ -13,6 +13,7 @@ public:
     vector<Target> detectTargets(const Mat& image);
 protected:
     Blob<float>* createImInfoBlob(const Mat& image);
+    vector<Rect> getRegions(vector<vector<float> > &rois);
 };
 
 #endif //SUPERVISORY_FRAME_FASTER_RCNN_DETECTOR_HPP
