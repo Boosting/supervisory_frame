@@ -22,7 +22,7 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     vector<Rect> regions = getRegionProposals(image);
     if(regions.empty()) return vector<Target>();
     int region_num = regions.size();
-    int batch_size = 20;
+    int batch_size = 4;
 
     Blob<float>* image_blob = createImageBlob(image);
     float type = 0.0;
@@ -57,7 +57,7 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     cout<<"forward use time: "<< (double)(time2 - time1) / CLOCKS_PER_SEC <<endl;
 
     vector<vector<Rect> > bbox = bbox_transform(regions, bbox_pred, image);
-    vector<Target> targets = nms(bbox, cls_prob, 0.7, 0.01);
+    vector<Target> targets = nms(bbox, cls_prob, 0.5, 0.1);
 
     preRegions = vector<Rect>(targets.size());
     for(int i=0;i<targets.size();i++){
