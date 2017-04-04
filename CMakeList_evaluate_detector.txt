@@ -25,7 +25,8 @@ aux_source_directory(src/opencv2 OPENCV_TRACKING_SOURCE_FILES)
 add_executable(evaluate_detector
         src/evaluate_detector.cpp
         src/detector/fast_rcnn_detector.cpp
-        src/detector/caffe_detector.cpp
+        src/motion_detector/background_substraction_motion_detector.cpp
+		src/detector/caffe_detector.cpp
         src/target.cpp
         src/utils/opencv_util.cpp)
 
