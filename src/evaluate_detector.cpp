@@ -14,6 +14,8 @@ int main(){
     string output_address = "/home/dujiajun/CUHK/evaluate_detector_output.txt";
     ofstream out(output_address);
     int frame_id = 0;
+    clock_t time1, time2;
+    time1 = clock();
     while(cap.read(image)){
         vector<Target> targets = detector.detectTargets(image);
         for(Target &target: targets){
@@ -26,6 +28,8 @@ int main(){
         }
         frame_id++;
     }
+    time2 = clock();
+    cout<<"total use time:: "<<(time2 - time1) / CLOCKS_PER_SEC<<endl;
     out.close();
     return 0;
 }
