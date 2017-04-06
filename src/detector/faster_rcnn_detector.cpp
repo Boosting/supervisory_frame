@@ -2,18 +2,8 @@
 // Created by dujiajun on 2/10/17.
 //
 #include "detector/faster_rcnn_detector.hpp"
-FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& trained_file, int gpu_id)
-        :CaffeDetector(model_file, trained_file, gpu_id) {
-    // VOC 1+20 classes
-    idToClass = {
-            Target::UNKNOWN,
-            Target::UNKNOWN, Target::BICYCLE, Target::UNKNOWN, Target::UNKNOWN,
-            Target::UNKNOWN, Target::BUS, Target::CAR, Target::UNKNOWN,
-            Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN,
-            Target::UNKNOWN, Target::MOTORBIKE, Target::PERSON, Target::UNKNOWN,
-            Target::UNKNOWN, Target::UNKNOWN, Target::TRAIN, Target::UNKNOWN
-    };
-}
+FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& trained_file, const vector<Target::TARGET_CLASS> &itc, int gpu_id)
+        :CaffeDetector(model_file, trained_file, itc, gpu_id) {}
 
 vector<Target> FasterRcnnDetector::detectTargets(const Mat& image) {
     //Only single-image batch implemented, and no image pyramid

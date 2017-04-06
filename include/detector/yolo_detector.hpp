@@ -16,7 +16,7 @@ extern "C" {
 
 class YoloDetector: public MultiTargetDetector {
 public:
-    YoloDetector(bool useGPU = true);
+    YoloDetector(const vector<Target::TARGET_CLASS> &itc, bool useGPU = true);
     vector<Target> detectTargets(const Mat& image);
 protected:
     network darknet_network;

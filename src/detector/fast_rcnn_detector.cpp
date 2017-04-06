@@ -6,19 +6,9 @@
 #include "utils/selective_search.hpp"
 
 //FastRcnnDetector::FastRcnnDetector(FasterRcnnDetector &fdetector, const string& model_file, const string& trained_file, int gpu_id)
-FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& trained_file, int gpu_id)
+FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& trained_file, const vector<Target::TARGET_CLASS> &itc, int gpu_id)
 //        :CaffeDetector(model_file, trained_file, gpu_id), fasterRcnnDetector(fdetector) {
-        :CaffeDetector(model_file, trained_file, gpu_id){
-    // VOC 1+20 classes
-    idToClass = {
-            Target::UNKNOWN,
-//            Target::UNKNOWN, Target::BICYCLE, Target::UNKNOWN, Target::UNKNOWN,
-            Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, //bicycle is easy to confuse with person
-            Target::UNKNOWN, Target::BUS, Target::CAR, Target::UNKNOWN,
-            Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN,
-            Target::UNKNOWN, Target::MOTORBIKE, Target::PERSON, Target::UNKNOWN,
-            Target::UNKNOWN, Target::UNKNOWN, Target::TRAIN, Target::UNKNOWN
-    };
+        :CaffeDetector(model_file, trained_file, itc, gpu_id){
 //    useFasterRcnn = true;
 }
 

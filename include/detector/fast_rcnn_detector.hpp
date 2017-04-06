@@ -16,7 +16,7 @@
 class FastRcnnDetector: public CaffeDetector {
 public:
 //    FastRcnnDetector(FasterRcnnDetector &fasterRcnnDetector, const string& model_file, const string& trained_file, int gpu_id = 1);
-    FastRcnnDetector(const string& model_file, const string& trained_file, int gpu_id = 1);
+    FastRcnnDetector(const string& model_file, const string& trained_file, const vector<Target::TARGET_CLASS> &itc, int gpu_id = 1);
     vector<Target> detectTargets(const Mat &image);
 protected:
     vector<Rect> preRegions;

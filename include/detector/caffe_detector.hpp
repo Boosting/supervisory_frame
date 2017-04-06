@@ -14,7 +14,7 @@ using namespace std;
 
 class CaffeDetector: public MultiTargetDetector {
 public:
-    CaffeDetector(const string& model_file, const string& trained_file, int gpu_id = 0);
+    CaffeDetector(const string& model_file, const string& trained_file, const vector<Target::TARGET_CLASS> &itc, int gpu_id = 0);
 protected:
     boost::shared_ptr<Net<float> > net;
     Blob<float>* createImageBlob(const Mat& image);

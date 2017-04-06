@@ -4,7 +4,7 @@
 
 #include "detector/caffe_detector.hpp"
 
-CaffeDetector::CaffeDetector(const string& model_file, const string& trained_file, int gpu_id):MultiTargetDetector() {
+CaffeDetector::CaffeDetector(const string& model_file, const string& trained_file, const vector<Target::TARGET_CLASS> &itc, int gpu_id):MultiTargetDetector(itc) {
     if (gpu_id>=0) {
         Caffe::set_mode(Caffe::GPU);
         Caffe::SetDevice(gpu_id); //may implement detecting gpu id automatically later

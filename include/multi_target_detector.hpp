@@ -13,6 +13,7 @@ using namespace std;
  */
 class MultiTargetDetector{
 public:
+    MultiTargetDetector(const vector<Target::TARGET_CLASS> &itc):idToClass(itc) {}
     /**
      * @brief Detect the targets from the image.
      * @param image The image.
@@ -21,7 +22,7 @@ public:
     virtual vector<Target> detectTargets(const Mat& image) = 0;
 protected:
     /**
-     * @brief A vector of target classes, the first element is background
+     * @brief Map id to target class.
      */
     vector<Target::TARGET_CLASS> idToClass;
 };
