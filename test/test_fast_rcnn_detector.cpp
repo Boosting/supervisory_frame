@@ -8,7 +8,7 @@
 
 int main(){
     // VOC 1+20 classes
-    voc_itc = {
+    vector<Target::TARGET_CLASS> voc_itc = {
             Target::UNKNOWN,
 //            Target::UNKNOWN, Target::BICYCLE, Target::UNKNOWN, Target::UNKNOWN,
             Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, //bicycle is easy to confuse with person

@@ -7,7 +7,7 @@
 #include "real_time_monitor.hpp"
 
 int main(){
-    coco_itc = {
+    vector<Target::TARGET_CLASS> coco_itc = {
             Target::PERSON,     Target::BICYCLE,        Target::CAR,            Target::MOTORBIKE,
             Target::UNKNOWN,    Target::BUS,            Target::TRAIN,          Target::TRUCK,
             Target::UNKNOWN,    Target::TRAFFIC_LIGHT,  Target::FIRE_HYDRANT,   Target::STOP_SIGN

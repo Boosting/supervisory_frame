@@ -7,7 +7,7 @@
 #include "real_time_monitor.hpp"
 
 int main(){
-    voc_itc = {
+    vector<Target::TARGET_CLASS> voc_itc = {
             Target::UNKNOWN,
             Target::UNKNOWN, Target::BICYCLE, Target::UNKNOWN, Target::UNKNOWN,
             Target::UNKNOWN, Target::BUS, Target::CAR, Target::UNKNOWN,
