@@ -23,7 +23,7 @@ link_directories(${CUDA_PATH}/lib64)
 aux_source_directory(src/opencv2 OPENCV_TRACKING_SOURCE_FILES)
 
 add_executable(test_fast_rcnn_detector
-        src/test_fast_rcnn_detector.cpp
+        test/test_fast_rcnn_detector.cpp
         src/real_time_monitor.cpp
         src/displayer.cpp
         src/fusion/detector_only_fusion.cpp

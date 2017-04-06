@@ -7,6 +7,17 @@
 #include "real_time_monitor.hpp"
 
 int main(){
+    // VOC 1+20 classes
+    voc_itc = {
+            Target::UNKNOWN,
+//            Target::UNKNOWN, Target::BICYCLE, Target::UNKNOWN, Target::UNKNOWN,
+            Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, //bicycle is easy to confuse with person
+            Target::UNKNOWN, Target::BUS, Target::CAR, Target::UNKNOWN,
+            Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN, Target::UNKNOWN,
+            Target::UNKNOWN, Target::MOTORBIKE, Target::PERSON, Target::UNKNOWN,
+            Target::UNKNOWN, Target::UNKNOWN, Target::TRAIN, Target::UNKNOWN
+    };
+
     string address="/home/dujiajun/CUHKSquare.mpg";
     string fast_prototxt = "/home/dujiajun/fast-rcnn/models/VGG16/test.prototxt";
     string fast_trained_model = "/home/dujiajun/fast-rcnn/data/fast_rcnn_models/vgg16_fast_rcnn_iter_40000.caffemodel";
@@ -14,7 +25,7 @@ int main(){
 //    string faster_trained_model = "/home/dujiajun/py-faster-rcnn/data/faster_rcnn_models/VGG16_faster_rcnn_final.caffemodel";
 //    FasterRcnnDetector fasterRcnnDetector(faster_prototxt, faster_trained_model);
 //    FastRcnnDetector detector(fasterRcnnDetector, fast_prototxt, fast_trained_model);
-    FastRcnnDetector detector(fast_prototxt, fast_trained_model);
+    FastRcnnDetector detector(fast_prototxt, fast_trained_model, voc_itc);
     DetectorOnlyFusion fusion(detector);
     Displayer displayer;
     RealTimeMonitor monitor(address, fusion, displayer);

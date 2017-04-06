@@ -24,7 +24,7 @@ link_directories(${DARKNET_PATH})
 aux_source_directory(src/opencv2 OPENCV_TRACKING_SOURCE_FILES)
 
 set(SOURCE_FILES
-        src/test_yolo_detector.cpp
+        test/test_yolo_detector.cpp
         src/real_time_monitor.cpp
         src/displayer.cpp
         src/fusion/detector_only_fusion.cpp
