@@ -15,6 +15,9 @@ int main(){
             Target::UNKNOWN, Target::MOTORBIKE, Target::PERSON, Target::UNKNOWN,
             Target::UNKNOWN, Target::UNKNOWN, Target::TRAIN, Target::UNKNOWN
     };
+    vector<Target::TARGET_CLASS> kitti_itc = {
+            Target::UNKNOWN, Target::CAR, Target::PERSON, Target::BICYCLE
+    };
     string address="/home/dujiajun/CUHKSquare.mpg";
     string prototxt = "/home/dujiajun/py-faster-rcnn/models/pascal_voc/VGG16/faster_rcnn_end2end/test.prototxt";
     string trained_model = "/home/dujiajun/py-faster-rcnn/data/faster_rcnn_models/VGG16_faster_rcnn_final.caffemodel";
