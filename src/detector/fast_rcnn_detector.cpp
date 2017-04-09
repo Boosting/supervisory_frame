@@ -24,18 +24,17 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
 //    }
     if(regions.empty()) return vector<Target>();
     int region_num = regions.size();
-    int batch_size = 4;
+    int batch_size = 128;
 
-    createImageBlob(image, "data");
     net->input_blobs()[0]->Reshape({1, 3, image.rows, image.cols});
     net->input_blobs()[1]->Reshape({batch_size, 5});
     net->Reshape();
-
+    createImageBlob(image, "data");
     vector<vector<float> > cls_prob(region_num);
     vector<vector<float> > bbox_pred(region_num);
     clock_t time1, time2;
     time1 = clock();
-    for(int i=0;i<regions.size();i+=batch_size) {
+	for(int i=0;i<regions.size();i+=batch_size) {
         int sp = i, ep;
         if(sp+batch_size>regions.size()){
             ep = regions.size()-1;
@@ -45,8 +44,8 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
             ep = sp+batch_size-1;
         }
         createRoisBlob(regions, sp, ep, "rois");
-        net->Forward();
-        vector<vector<float> > part_cls_prob = getOutputData("cls_prob");
+		net->ForwardPrefilled();
+		vector<vector<float> > part_cls_prob = getOutputData("cls_prob");
         vector<vector<float> > part_bbox_pred = getOutputData("bbox_pred");
         for(int j=sp;j<=ep;j++){
             cls_prob[j] = part_cls_prob[j-sp];
