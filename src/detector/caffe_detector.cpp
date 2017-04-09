@@ -15,24 +15,21 @@ CaffeDetector::CaffeDetector(const string& model_file, const string& trained_fil
     net->CopyTrainedLayersFrom(trained_file);
 }
 
-Blob<float>* CaffeDetector::createImageBlob(const Mat& image){
+void CaffeDetector::createImageBlob(const Mat& image, const string &blob_name){
+    boost::shared_ptr<Blob<float> > blob_ptr = net->blob_by_name(blob_name);
+    float* blob_data = blob_ptr->mutable_cpu_data();
     int image_num = 1, image_channels = 3, image_height = image.rows, image_width = image.cols;
-    vector<int> image_shape={image_num, image_channels, image_height, image_width};
-    Blob<float>* image_blob = new Blob<float>(image_shape); //may cause memory leak
-    float* image_blob_data = image_blob->mutable_cpu_data();
-
     for(int j=0;j<image_height;j++) //may need speed up
     {
         const uchar *data = image.ptr<uchar>(j);
         for(int k=0;k<image_width;k++){
             for(int i=0;i<image_channels;i++){
                 int pos=(i*image_height+j)*image_width+k;
-                image_blob_data[pos] = (int)(*data);
+                blob_data[pos] = (int)(*data);
                 data++;
             }
         }
     }
-    return image_blob;
 }
 
 vector<vector<float> > CaffeDetector::getOutputData(string blob_name)

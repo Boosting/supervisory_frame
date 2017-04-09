@@ -24,7 +24,7 @@ protected:
 //    FasterRcnnDetector &fasterRcnnDetector;
 //    bool useFasterRcnn;
     vector<Rect> getRegionProposals(const Mat &image);
-    Blob<float>* createRoisBlob(const vector<Rect> &regions, int sp, int ep);
+    void createRoisBlob(const vector<Rect> &regions, int sp, int ep, const string &blob_name);
 };
 
 #endif //SUPERVISORY_FRAME_FAST_RCNN_DETECTOR_HPP

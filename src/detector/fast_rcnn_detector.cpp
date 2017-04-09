@@ -26,8 +26,7 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     int region_num = regions.size();
     int batch_size = 4;
 
-    Blob<float>* image_blob = createImageBlob(image);
-    float type = 0.0;
+    createImageBlob(image, "data");
     net->input_blobs()[0]->Reshape({1, 3, image.rows, image.cols});
     net->input_blobs()[1]->Reshape({batch_size, 5});
     net->Reshape();
@@ -45,9 +44,8 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
         } else{
             ep = sp+batch_size-1;
         }
-        Blob<float>* rois = createRoisBlob(regions, sp, ep);
-        vector<Blob<float>* > bottom = {image_blob, rois};
-        net->Forward(bottom, &type);
+        createRoisBlob(regions, sp, ep, "rois");
+        net->Forward();
         vector<vector<float> > part_cls_prob = getOutputData("cls_prob");
         vector<vector<float> > part_bbox_pred = getOutputData("bbox_pred");
         for(int j=sp;j<=ep;j++){
@@ -88,21 +86,19 @@ vector<Rect> FastRcnnDetector::getRegionProposals(const Mat &image) {
     return region_proposals;
 }
 
-Blob<float>* FastRcnnDetector::createRoisBlob(const vector<Rect> &regions, int sp, int ep){
-    vector<int> rois_shape={ep - sp + 1, 5};
-    Blob<float>* rois_blob = new Blob<float>(rois_shape); //may cause memory leak
-    float* rois_blob_cpu_data = rois_blob->mutable_cpu_data();
+void FastRcnnDetector::createRoisBlob(const vector<Rect> &regions, int sp, int ep, const string &blob_name){
+    boost::shared_ptr<Blob<float> > blob_ptr = net->blob_by_name(blob_name);
+    float* blob_data = blob_ptr->mutable_cpu_data();
     for(int i=sp;i<=ep;i++){
         int index = 5 * (i - sp);
         const Rect &region = regions[i];
         int x1 = region.x, y1 = region.y;
         int w = region.width, h = region.height;
         int x2 = x1 + w - 1, y2 = y1 + h - 1;
-        rois_blob_cpu_data[index] = 0;
-        rois_blob_cpu_data[index+1] = x1;
-        rois_blob_cpu_data[index+2] = y1;
-        rois_blob_cpu_data[index+3] = x2;
-        rois_blob_cpu_data[index+4] = y2;
+        blob_data[index] = 0;
+        blob_data[index+1] = x1;
+        blob_data[index+2] = y1;
+        blob_data[index+3] = x2;
+        blob_data[index+4] = y2;
     }
-    return rois_blob;
 }
