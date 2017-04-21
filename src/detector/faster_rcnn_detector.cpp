@@ -6,7 +6,7 @@ FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& t
         :CaffeDetector(model_file, trained_file, itc, gpu_id) {}
 
 vector<Target> FasterRcnnDetector::detectTargets(const Mat& image) {
-    createImInfoBlob(image, "im_info")
+    createImInfoBlob(image, "im_info");
     vector<int> image_shape = {1, 3, image.rows, image.cols};
     net->input_blobs()[0]->Reshape(image_shape);
     net->Reshape();
