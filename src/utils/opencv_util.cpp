@@ -16,3 +16,13 @@ double OpencvUtil::getOverlapRate(Rect r1, Rect r2){
     }
     return overlapRate;
 }
+
+void OpencvUtil::makeRegionsVaild(vector<Rect> &regions, const Mat &image){
+    int image_width = image.cols, image_height = image.rows;
+    for(Rect &region: regions){
+        region.x = max(region.x, 0);
+        region.y = max(region.y, 0);
+        region.width = min(region.width, image_width - region.x);
+        region.height = min(region.height, image_height - region.y);
+    }
+}

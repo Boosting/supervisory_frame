@@ -2,6 +2,7 @@
 // Created by dujiajun on 3/3/17.
 //
 
+#include <utils/opencv_util.hpp>
 #include "detector/fast_rcnn_detector.hpp"
 #include "utils/selective_search.hpp"
 
@@ -61,7 +62,6 @@ vector<Rect> FastRcnnDetector::getKalmanProposals() {
                 Rect region = target.getRegion();
                 int width = region.width, height = region.height;
                 int x = center_x - width / 2.0, y = center_y - height / 2.0;
-                x = max(x, 0), y = max(y, 0);
                 kalman_proposals.push_back({x, y, width, height});
                 break;
             }
@@ -81,8 +81,8 @@ vector<Rect> FastRcnnDetector::getMovingProposals(const Mat &image){
         getRectSubPix(image, {w1, h1}, {center_x, center_y}, partImage);
         vector<Rect> regions = region_proposal::selectiveSearch(partImage, 500, 0.8, 50, 1000, 100000, 2.5 );
         for(Rect &r2: regions){
-            int x2 = min(x1 + r2.x, image_width-1), y2 = min(y1 + r2.y, image_height-1);
-            int w2 = min(r2.width, image_width - x2), h2 = min(r2.height, image_height - y2);
+            int x2 = x1 + r2.x, y2 = y1 + r2.y;
+            int w2 = r2.width, h2 = r2.height;
             moving_proposals.push_back({x2, y2, w2, h2});
         }
     }
@@ -92,6 +92,7 @@ vector<Rect> FastRcnnDetector::getRegionProposals(const Mat &image) {
     vector<Rect> kalman_proposals = getKalmanProposals();
     vector<Rect> moving_proposals = getMovingProposals(image);
     kalman_proposals.insert(kalman_proposals.end(), moving_proposals.begin(), moving_proposals.end());
+    OpencvUtil::makeRegionsVaild(kalman_proposals, image);
     return kalman_proposals;
 }
 
