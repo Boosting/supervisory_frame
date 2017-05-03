@@ -16,7 +16,7 @@ vector<Rect> BackgroundSubstractionMotionDetector::detect(const Mat &image){
     GaussianBlur(image, gaussianImage, {5, 5}, 2);
     mog->apply(gaussianImage, foreground, 0.001);
     if(!hasBackground){
-        regions.push_back({0, 0, image.cols, image.rows});
+		//regions.push_back({0, 0, image.cols, image.rows});
         hasBackground = true;
         return regions;
     }
