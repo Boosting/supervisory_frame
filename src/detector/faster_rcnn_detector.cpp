@@ -6,19 +6,14 @@ FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& t
         :CaffeDetector(model_file, trained_file, itc, gpu_id) {}
 
 vector<Target> FasterRcnnDetector::detectTargets(const Mat& image) {
-    //Only single-image batch implemented, and no image pyramid
-
-    Blob<float>* image_blob = createImageBlob(image);
-    Blob<float>* im_info_blob = createImInfoBlob(image);
-    vector<Blob<float>* > bottom = {image_blob, im_info_blob};
-    float type = 0.0;
+    createImInfoBlob(image, "im_info");
     vector<int> image_shape = {1, 3, image.rows, image.cols};
     net->input_blobs()[0]->Reshape(image_shape);
     net->Reshape();
 
     clock_t time1, time2;
     time1 = clock();
-    net->Forward(bottom, &type);
+    net->ForwardPrefilled();
     time2 = clock();
     cout<<"forward use time: "<< (double)(time2 - time1) / CLOCKS_PER_SEC <<endl<<endl<<endl;
 
@@ -32,13 +27,11 @@ vector<Target> FasterRcnnDetector::detectTargets(const Mat& image) {
     return targets;
 }
 
-Blob<float>* FasterRcnnDetector::createImInfoBlob(const Mat& image){
+void FasterRcnnDetector::createImInfoBlob(const Mat& image, const string &blob_name){
+    boost::shared_ptr<Blob<float> > blob_ptr = net->blob_by_name(blob_name);
+    float* blob_data = blob_ptr->mutable_cpu_data();
     int image_height = image.rows, image_width = image.cols;
-    vector<int> im_info_shape={1,3};
-    Blob<float>* im_info_blob = new Blob<float>(im_info_shape);
-    float* data = im_info_blob->mutable_cpu_data();
-    data[0]=image_height, data[1]=image_width, data[2]=1;
-    return im_info_blob;
+    blob_data[0] = image_height, blob_data[1] = image_width, blob_data[2] = 1;
 }
 
 vector<Rect> FasterRcnnDetector::getRegions(vector<vector<float> > &rois){

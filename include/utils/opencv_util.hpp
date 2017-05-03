@@ -6,10 +6,12 @@
 #define SUPERVISORY_FRAME_OPENCV_UTIL_HPP
 
 #include <opencv/cv.hpp>
+#include <vector>
 using namespace cv;
-
+using namespace std;
 class OpencvUtil {
 public:
     static double getOverlapRate(Rect r1, Rect r2);
+    static void makeRegionsVaild(vector<Rect> &regions, const Mat &image);
 };
 #endif //SUPERVISORY_FRAME_OPENCV_UTIL_HPP

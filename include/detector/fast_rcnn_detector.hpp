@@ -9,20 +9,16 @@
 #include "motion_detector/background_substraction_motion_detector.hpp"
 #include "detector/faster_rcnn_detector.hpp"
 
-/**
- * This FastRcnnDetector doesn't use region proposal,
- * uses region provided instead.
- */
 class FastRcnnDetector: public CaffeDetector {
 public:
-//    FastRcnnDetector(FasterRcnnDetector &fasterRcnnDetector, const string& model_file, const string& trained_file, int gpu_id = 1);
     FastRcnnDetector(const string& model_file, const string& trained_file, const vector<Target::TARGET_CLASS> &itc, int gpu_id = 1);
     vector<Target> detectTargets(const Mat &image);
 protected:
-    vector<Rect> preRegions;
+    map<unsigned long long, KalmanFilter> kalman_filters;
+    vector<Target> preTargets;
     BackgroundSubstractionMotionDetector motion_detector;
-//    FasterRcnnDetector &fasterRcnnDetector;
-//    bool useFasterRcnn;
+    vector<Rect> getKalmanProposals();
+    vector<Rect> getMovingProposals(const Mat &image);
     vector<Rect> getRegionProposals(const Mat &image);
     void createRoisBlob(const vector<Rect> &regions, int sp, int ep, const string &blob_name);
 };

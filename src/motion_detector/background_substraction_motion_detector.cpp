@@ -17,8 +17,8 @@ vector<Rect> BackgroundSubstractionMotionDetector::detect(const Mat &image){
     mog->apply(gaussianImage, foreground, 0.001);
     if(!hasBackground){
 		//regions.push_back({0, 0, image.cols, image.rows});
-        hasBackground = true;
-        return regions;
+		hasBackground = true;
+		return regions;
     }
     erode(foreground, foreground, cv::Mat());
     dilate(foreground, foreground, cv::Mat());

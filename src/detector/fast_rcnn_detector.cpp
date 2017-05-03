@@ -2,26 +2,16 @@
 // Created by dujiajun on 3/3/17.
 //
 
+#include <utils/opencv_util.hpp>
 #include "detector/fast_rcnn_detector.hpp"
 #include "utils/selective_search.hpp"
 
-//FastRcnnDetector::FastRcnnDetector(FasterRcnnDetector &fdetector, const string& model_file, const string& trained_file, int gpu_id)
 FastRcnnDetector::FastRcnnDetector(const string& model_file, const string& trained_file, const vector<Target::TARGET_CLASS> &itc, int gpu_id)
-//        :CaffeDetector(model_file, trained_file, gpu_id), fasterRcnnDetector(fdetector) {
         :CaffeDetector(model_file, trained_file, itc, gpu_id){
-//    useFasterRcnn = true;
 }
 
 vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     vector<Rect> regions = getRegionProposals(image);
-//    if(useFasterRcnn){
-//        useFasterRcnn = false;
-//        vector<Target> targets = fasterRcnnDetector.detectTargets(image);
-//        for(Target &target: targets){
-//            preRegions.push_back(target.getRegion());
-//        }
-//        return targets;
-//    }
     if(regions.empty()) return vector<Target>();
     int region_num = regions.size();
     int batch_size = 128;
@@ -54,20 +44,34 @@ vector<Target> FastRcnnDetector::detectTargets(const Mat &image) {
     }
     time2 = clock();
     cout<<"forward use time: "<< (double)(time2 - time1) / CLOCKS_PER_SEC <<endl;
-
     vector<vector<Rect> > bbox = bbox_transform(regions, bbox_pred, image);
     vector<Target> targets = nms(bbox, cls_prob, 0.5, 0.1);
-
-    preRegions = vector<Rect>(targets.size());
-    for(int i=0;i<targets.size();i++){
-        preRegions[i] = targets[i].getRegion();
-    }
+    preTargets = targets;
     return targets;
 }
 
-vector<Rect> FastRcnnDetector::getRegionProposals(const Mat &image) {
+vector<Rect> FastRcnnDetector::getKalmanProposals() {
+    vector<Rect> kalman_proposals;
+    for(auto p: kalman_filters){
+        unsigned long long id = p.first;
+        KalmanFilter &kalman_filter = p.second;
+        Mat prediction = kalman_filter.predict();
+        float center_x = prediction.at<float>(0), center_y = prediction.at<float>(1);
+        for(Target &target: preTargets){
+            if(target.getId()==id) {
+                Rect region = target.getRegion();
+                int width = region.width, height = region.height;
+                int x = center_x - width / 2.0, y = center_y - height / 2.0;
+                kalman_proposals.push_back({x, y, width, height});
+                break;
+            }
+        }
+    }
+    return kalman_proposals;
+}
+vector<Rect> FastRcnnDetector::getMovingProposals(const Mat &image){
     int image_width = image.cols, image_height = image.rows;
-    vector<Rect> region_proposals = preRegions;
+    vector<Rect> moving_proposals;
     vector<Rect> moving_regions = motion_detector.detect(image);
     for(Rect &r1: moving_regions){
         Mat partImage;
@@ -77,12 +81,19 @@ vector<Rect> FastRcnnDetector::getRegionProposals(const Mat &image) {
         getRectSubPix(image, {w1, h1}, {center_x, center_y}, partImage);
         vector<Rect> regions = region_proposal::selectiveSearch(partImage, 500, 0.8, 50, 1000, 100000, 2.5 );
         for(Rect &r2: regions){
-            int x2 = min(x1 + r2.x, image_width-1), y2 = min(y1 + r2.y, image_height-1);
-            int w2 = min(r2.width, image_width - x2), h2 = min(r2.height, image_height - y2);
-            region_proposals.push_back({x2, y2, w2, h2});
+            int x2 = x1 + r2.x, y2 = y1 + r2.y;
+            int w2 = r2.width, h2 = r2.height;
+            moving_proposals.push_back({x2, y2, w2, h2});
         }
     }
-    return region_proposals;
+    return moving_proposals;
+}
+vector<Rect> FastRcnnDetector::getRegionProposals(const Mat &image) {
+    vector<Rect> kalman_proposals = getKalmanProposals();
+    vector<Rect> moving_proposals = getMovingProposals(image);
+    kalman_proposals.insert(kalman_proposals.end(), moving_proposals.begin(), moving_proposals.end());
+    OpencvUtil::makeRegionsVaild(kalman_proposals, image);
+    return kalman_proposals;
 }
 
 void FastRcnnDetector::createRoisBlob(const vector<Rect> &regions, int sp, int ep, const string &blob_name){

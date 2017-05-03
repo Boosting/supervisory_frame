@@ -12,7 +12,7 @@ public:
     FasterRcnnDetector(const string& model_file, const string& trained_file, const vector<Target::TARGET_CLASS> &itc, int gpu_id = 2);
     vector<Target> detectTargets(const Mat& image);
 protected:
-    Blob<float>* createImInfoBlob(const Mat& image);
+    void createImInfoBlob(const Mat& image, const string &blob_name);
     vector<Rect> getRegions(vector<vector<float> > &rois);
 };
 

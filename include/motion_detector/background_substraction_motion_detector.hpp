@@ -7,7 +7,7 @@
 
 #include "motion_detector.hpp"
 
-class BackgroundSubstractionMotionDetector{
+class BackgroundSubstractionMotionDetector: public MotionDetector{
 public:
     BackgroundSubstractionMotionDetector();
     vector<Rect> detect(const Mat &image);
