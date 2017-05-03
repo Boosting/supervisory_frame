@@ -19,7 +19,7 @@ protected:
     boost::shared_ptr<Net<float> > net;
     void createImageBlob(const Mat& image, const string &blob_name);
     vector<vector<float> > getOutputData(string blob_name);
-    vector<vector<Rect> > bbox_transform(const vector<Rect> &rois, const vector<vector<float> > &bbox_pred, const Mat& image);
+    vector<vector<Rect> > bbox_transform(const vector<Rect> &rois, const vector<vector<float> > &bbox_pred, const Mat& image, double im_scale);
     vector<Target> nms(const vector<vector<Rect> > &bbox, const vector<vector<float> > &cls_prob, float thresh = 0.7, float min_trust_score = 0.1);
 };
 

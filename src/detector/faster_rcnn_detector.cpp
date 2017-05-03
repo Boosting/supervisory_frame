@@ -6,8 +6,11 @@ FasterRcnnDetector::FasterRcnnDetector(const string& model_file, const string& t
         :CaffeDetector(model_file, trained_file, itc, gpu_id) {}
 
 vector<Target> FasterRcnnDetector::detectTargets(const Mat& image) {
-    createImInfoBlob(image, "im_info");
-    vector<int> image_shape = {1, 3, image.rows, image.cols};
+    Mat image_resized;
+    double im_scale = 600.0 / min(image.rows, image.cols);
+    resize(image, image_resized, {0, 0}, im_scale, im_scale);
+    createImInfoBlob(image_resized, "im_info");
+    vector<int> image_shape = {1, 3, image_resized.rows, image_resized.cols};
     net->input_blobs()[0]->Reshape(image_shape);
     net->Reshape();
 
@@ -22,7 +25,7 @@ vector<Target> FasterRcnnDetector::detectTargets(const Mat& image) {
     vector<vector<float> > cls_prob = getOutputData("cls_prob");
     vector<vector<float> > bbox_pred = getOutputData("bbox_pred");
 
-    vector<vector<Rect> > bbox = bbox_transform(regions, bbox_pred, image);
+    vector<vector<Rect> > bbox = bbox_transform(regions, bbox_pred, image_resized, im_scale);
     vector<Target> targets = nms(bbox, cls_prob, 0.5, 0.1);
     return targets;
 }
